@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title> quickchange </title>
+	</head>
+	<body>
+		<style type = "text/css">
+	body{
+		background-color:lightCoral;
+		border:10px #FFF dashed;
+		padding: 0px;
+        margin: 0px;
+		width: 750px;
+		height: 950px;
+		}
+	Button{
+		background:#FF4D40;
+		width: 80px;
+		height: 40px;
+		margin-top: 10px;
+		}
+	</style>
+
+
+<script type="text/javascript" src="./js/roslib/eventemitter2.min.js"></script>
+<script type="text/javascript" src="./js/roslib/roslib.min.js"></script>
+<script src="./jquery-ui-1.11.4/jquery-1.4.1.js"></script>
+<script type="text/javascript"></script>
+<script language="javascript">
+<!--ROS-->
+var ros = new ROSLIB.Ros({
+	url : 'ws://172.17.121.10:9090'  //172.17.121.10
+});
+ros.on('connection', function() {
+    console.log('Connection made!');
+    document.getElementById('connected').style.display = 'inline';
+});
+ros.on('error', function(error) {
+	console.log('Error connecting to websocket server: ', error);
+});
+ros.on('close', function() {
+	console.log('Connection to websocket server closed.');
+});
+var SaveParameter_Topic = new ROSLIB.Topic({
+		ros : ros,
+		name :'/web/SaveParameter',
+		messageType : 'strategy/quickchange'
+});
+var SaveParametercmd = new ROSLIB.Message({
+	backward_310L : 0.9,
+	backward_310R : 1.1,
+	backward_300L : 0.9,
+	backward_300R : 1.1,
+	backward_250L : 0.9,
+	backward_250R : 1.1,
+	backward_200L : 0.82,
+	backward_200R : 0.96,
+	backward_150L : 0.75,
+	backward_150R : 1.0,
+	backward_100L : 0.9,
+	backward_100R : 1.02,
+	backward_50L : 0.85,
+	backward_50R : 1.03,
+	forward_x_add : 170,
+	forward_x_max : 3000, 
+	backward_x_add : -200,
+	backward_x_max : -3100,
+	forward_initial_x : 1500,
+	backward_initial_x : -500,
+	slowdown_250 : 130,
+	slowdown_300 : 210,
+	slowdown_initial_x : -500,
+	FRAMCOUNT : 1,
+	change_mode : 1,
+	back_total_size : 12500,
+	forward_initial_theta : -2,
+	forward_theta_left_one : 2,
+	forward_theta_right_one : -1,
+	forward_theta_left_two : 2,
+	forward_theta_right_two : -1,
+	forward_theta_left_three : 2,
+	forward_theta_right_three : -1,
+	backward_initial_theta : 1,
+	backward_theta_left_one : 2,
+	backward_theta_right_one : -1,
+	backward_theta_left_two : 1,
+	backward_theta_right_two : -2,
+	backward_theta_left_three : 2,
+	backward_theta_right_three : -2,
+	delay_ybtime : 1800,
+	without_left : 1,
+	without_right : -2,
+	right_timeuse : 3500,
+	initial_timeuse : 2000,
+	left_timeuse : 2700,
+	IMU_angle_range : 30
+});
+function SaveParameter(){
+	SaveParametercmd.backward_310L = Number(document.getElementById("backward_310L").value);
+	SaveParametercmd.backward_310R = Number(document.getElementById("backward_310R").value);
+	SaveParametercmd.backward_300L = Number(document.getElementById("backward_300L").value);
+	SaveParametercmd.backward_300R = Number(document.getElementById("backward_300R").value);
+	SaveParametercmd.backward_250L = Number(document.getElementById("backward_250L").value);
+	SaveParametercmd.backward_250R = Number(document.getElementById("backward_250R").value);
+	SaveParametercmd.backward_200L = Number(document.getElementById("backward_200L").value);
+	SaveParametercmd.backward_200R = Number(document.getElementById("backward_200R").value);
+	SaveParametercmd.backward_150L = Number(document.getElementById("backward_150L").value);
+	SaveParametercmd.backward_150R = Number(document.getElementById("backward_150R").value);
+	SaveParametercmd.backward_100L = Number(document.getElementById("backward_100L").value);
+	SaveParametercmd.backward_100R = Number(document.getElementById("backward_100R").value);
+	SaveParametercmd.backward_50L = Number(document.getElementById("backward_50L").value);
+	SaveParametercmd.backward_50R = Number(document.getElementById("backward_50R").value);
+	SaveParametercmd.forward_x_add = Number(document.getElementById("forward_x_add").value);
+	SaveParametercmd.forward_x_max = Number(document.getElementById("forward_x_max").value);
+	SaveParametercmd.backward_x_add = Number(document.getElementById("backward_x_add").value);
+	SaveParametercmd.backward_x_max = Number(document.getElementById("backward_x_max").value);
+	SaveParametercmd.forward_initial_x = Number(document.getElementById("forward_initial_x").value);
+	SaveParametercmd.backward_initial_x = Number(document.getElementById("backward_initial_x").value);
+	SaveParametercmd.slowdown_250 = Number(document.getElementById("slowdown_250").value);
+	SaveParametercmd.slowdown_300 = Number(document.getElementById("slowdown_300").value);
+	SaveParametercmd.slowdown_initial_x = Number(document.getElementById("slowdown_initial_x").value);
+	SaveParametercmd.FRAMCOUNT = Number(document.getElementById("FRAMCOUNT").value);
+	SaveParametercmd.change_mode = Number(document.getElementById("change_mode").value);
+	SaveParametercmd.back_total_size = Number(document.getElementById("back_total_size").value);
+	SaveParametercmd.forward_initial_theta = Number(document.getElementById("forward_initial_theta").value);
+	SaveParametercmd.forward_theta_left_one = Number(document.getElementById("forward_theta_left_one").value);
+	SaveParametercmd.forward_theta_right_one = Number(document.getElementById("forward_theta_right_one").value);
+	SaveParametercmd.forward_theta_left_two = Number(document.getElementById("forward_theta_left_two").value);
+	SaveParametercmd.forward_theta_right_two = Number(document.getElementById("forward_theta_right_two").value);
+	SaveParametercmd.forward_theta_left_three = Number(document.getElementById("forward_theta_left_three").value);
+	SaveParametercmd.forward_theta_right_three = Number(document.getElementById("forward_theta_right_three").value);
+	SaveParametercmd.backward_initial_theta = Number(document.getElementById("backward_initial_theta").value);
+	SaveParametercmd.backward_theta_left_one = Number(document.getElementById("backward_theta_left_one").value);
+	SaveParametercmd.backward_theta_right_one = Number(document.getElementById("backward_theta_right_one").value);
+	SaveParametercmd.backward_theta_left_two = Number(document.getElementById("backward_theta_left_two").value);
+	SaveParametercmd.backward_theta_right_two = Number(document.getElementById("backward_theta_right_two").value);
+	SaveParametercmd.backward_theta_left_three = Number(document.getElementById("backward_theta_left_three").value);
+	SaveParametercmd.backward_theta_right_three = Number(document.getElementById("backward_theta_right_three").value);
+	SaveParametercmd.delay_ybtime = Number(document.getElementById("delay_ybtime").value);
+	SaveParametercmd.without_left = Number(document.getElementById("without_left").value);
+	SaveParametercmd.without_right = Number(document.getElementById("without_right").value);
+	SaveParametercmd.right_timeuse = Number(document.getElementById("right_timeuse").value);
+	SaveParametercmd.initial_timeuse = Number(document.getElementById("initial_timeuse").value);
+	SaveParametercmd.left_timeuse = Number(document.getElementById("left_timeuse").value);
+	SaveParametercmd.IMU_angle_range = Number(document.getElementById("IMU_angle_range").value);
+	SaveParameter_Topic.publish(SaveParametercmd);
+	console.log('save parameter!!!');
+}
+
+function changeparameter(name,value){
+        tmpvalue = value;
+        switch(name)
+	{
+        case "backward_310L":
+                console.log('backward_310L');
+		document.getElementById("backward_310L").value = tmpvalue;
+	break;
+        case "backward_310R":
+                console.log('backward_310R');
+		document.getElementById("backward_310R").value = tmpvalue;
+	break;
+	case "backward_300L":
+                console.log('backward_300L');
+		document.getElementById("backward_300L").value = tmpvalue;
+	break;
+	case "backward_300R":
+                console.log('backward_300R');
+		document.getElementById("backward_300R").value = tmpvalue;
+	break;
+	case "backward_250L":
+                console.log('backward_250L');
+		document.getElementById("backward_250L").value = tmpvalue;
+	break;
+	case "backward_250R":
+                console.log('backward_250R');
+		document.getElementById("backward_250R").value = tmpvalue;
+	break;
+	case "backward_200L":
+                console.log('backward_200L');
+		document.getElementById("backward_200L").value = tmpvalue;
+	break;
+	case "backward_200R":
+                console.log('backward_200R');
+		document.getElementById("backward_200R").value = tmpvalue;
+	break;
+	case "backward_150L":
+                console.log('backward_150L');
+		document.getElementById("backward_150L").value = tmpvalue;
+	break;
+	case "backward_150R":
+                console.log('backward_150R');
+		document.getElementById("backward_150R").value = tmpvalue;
+	break;
+	case "backward_100L":
+                console.log('backward_100L');
+		document.getElementById("backward_100L").value = tmpvalue;
+	break;
+	case "backward_100R":
+                console.log('backward_100R');
+		document.getElementById("backward_100R").value = tmpvalue;
+	break;
+	case "backward_50L":
+                console.log('backward_50L');
+		document.getElementById("backward_50L").value = tmpvalue;
+	break;
+        case "backward_50R":
+                console.log('backward_50R');
+		document.getElementById("backward_50R").value = tmpvalue;
+	break;
+	case "forward_x_add":
+                console.log('forward_x_add');
+		document.getElementById("forward_x_add").value = tmpvalue;
+	break;
+	case "forward_x_max":
+                console.log('forward_x_max');
+		document.getElementById("forward_x_max").value = tmpvalue;
+	break;
+	case "backward_x_add":
+                console.log('backward_x_add');
+		document.getElementById("backward_x_add").value = tmpvalue;
+	break;
+	case "backward_x_max":
+                console.log('backward_x_max');
+		document.getElementById("backward_x_max").value = tmpvalue;
+	break;
+	case "forward_initial_x":
+                console.log('forward_initial_x');
+		document.getElementById("forward_initial_x").value = tmpvalue;
+	break;
+	case "backward_initial_x":
+                console.log('backward_initial_x');
+		document.getElementById("backward_initial_x").value = tmpvalue;
+	break;
+	case "slowdown_250":
+                console.log('slowdown_250');
+		document.getElementById("slowdown_250").value = tmpvalue;
+	break;
+	case "slowdown_300":
+                console.log('slowdown_300');
+		document.getElementById("slowdown_300").value = tmpvalue;
+	break;
+	case "slowdown_initial_x":
+                console.log('slowdown_initial_x');
+		document.getElementById("slowdown_initial_x").value = tmpvalue;
+	break;
+	case "FRAMCOUNT":
+                console.log('FRAMCOUNT');
+		document.getElementById("FRAMCOUNT").value = tmpvalue;
+	break;
+        case "change_mode":
+                console.log('change_mode');
+		document.getElementById("change_mode").value = tmpvalue;
+	break;
+	case "back_total_size":
+                console.log('back_total_size');
+		document.getElementById("back_total_size").value = tmpvalue;
+	break;
+	case "forward_initial_theta":
+                console.log('forward_initial_theta');
+		document.getElementById("forward_initial_theta").value = tmpvalue;
+	break;
+	case "forward_theta_left_one":
+                console.log('forward_theta_left_one');
+		document.getElementById("forward_theta_left_one").value = tmpvalue;
+	break;
+	case "forward_theta_right_one":
+                console.log('forward_theta_right_one');
+		document.getElementById("forward_theta_right_one").value = tmpvalue;
+	break;
+	case "forward_theta_left_two":
+                console.log('forward_theta_left_two');
+		document.getElementById("forward_theta_left_two").value = tmpvalue;
+	break;
+	case "forward_theta_right_two":
+                console.log('forward_theta_right_two');
+		document.getElementById("forward_theta_right_two").value = tmpvalue;
+	break;
+	case "forward_theta_left_three":
+                console.log('forward_theta_left_three');
+		document.getElementById("forward_theta_left_three").value = tmpvalue;
+	break;
+	case "forward_theta_right_three":
+                console.log('forward_theta_right_three');
+		document.getElementById("forward_theta_right_three").value = tmpvalue;
+	break;
+	case "backward_initial_theta":
+                console.log('backward_initial_theta');
+		document.getElementById("backward_initial_theta").value = tmpvalue;
+	break;
+	case "backward_theta_left_one":
+                console.log('backward_theta_left_one');
+		document.getElementById("backward_theta_left_one").value = tmpvalue;
+	break;
+	case "backward_theta_right_one":
+                console.log('backward_theta_right_one');
+		document.getElementById("backward_theta_right_one").value = tmpvalue;
+	break;
+        case "backward_theta_left_two":
+                console.log('backward_theta_left_two');
+		document.getElementById("backward_theta_left_two").value = tmpvalue;
+	break;
+	case "backward_theta_right_two":
+                console.log('backward_theta_right_two');
+		document.getElementById("backward_theta_right_two").value = tmpvalue;
+	break;
+	case "backward_theta_left_three":
+                console.log('backward_theta_left_three');
+		document.getElementById("backward_theta_left_three").value = tmpvalue;
+	break;
+	case "backward_theta_right_three":
+                console.log('backward_theta_right_three');
+		document.getElementById("backward_theta_right_three").value = tmpvalue;
+	break;
+	case "delay_ybtime":
+                console.log('delay_ybtime');
+		document.getElementById("delay_ybtime").value = tmpvalue;
+	break;
+	case "without_left":
+                console.log('without_left');
+		document.getElementById("without_left").value = tmpvalue;
+	break;
+	case "without_right":
+                console.log('without_right');
+		document.getElementById("without_right").value = tmpvalue;
+	break;
+	case "right_timeuse":
+                console.log('right_timeuse');
+		document.getElementById("right_timeuse").value = tmpvalue;
+	break;
+	case "initial_timeuse":
+                console.log('initial_timeuse');
+		document.getElementById("initial_timeuse").value = tmpvalue;
+	break;
+	case "left_timeuse":
+                console.log('left_timeuse');
+		document.getElementById("left_timeuse").value = tmpvalue;
+	break;
+	case "IMU_angle_range":
+                console.log('IMU_angle_range');
+		document.getElementById("IMU_angle_range").value = tmpvalue;
+	break;
+	}
+}
+
+function LoadParameter()
+{
+            var LoadParameterClient = new ROSLIB.Service({
+                ros : ros,
+                name : '/web/Loadquickchange',
+                serviceType : 'strategy/Loadquickchange'
+            });
+            var parameter_request = new ROSLIB.ServiceRequest({
+                load : true
+            });
+        LoadParameterClient.callService(parameter_request , function(parameter_data){
+		document.getElementById("backward_310L").value = parameter_data.backward_310L;
+		document.getElementById("backward_310R").value = parameter_data.backward_310R;
+		document.getElementById("backward_300L").value = parameter_data.backward_300L;
+		document.getElementById("backward_300R").value = parameter_data.backward_300R;
+		document.getElementById("backward_250L").value = parameter_data.backward_250L;
+		document.getElementById("backward_250R").value = parameter_data.backward_250R;
+		document.getElementById("backward_200L").value = parameter_data.backward_200L;
+		document.getElementById("backward_200R").value = parameter_data.backward_200R;
+		document.getElementById("backward_150L").value = parameter_data.backward_150L;
+		document.getElementById("backward_150R").value = parameter_data.backward_150R;
+		document.getElementById("backward_100L").value = parameter_data.backward_100L;
+		document.getElementById("backward_100R").value = parameter_data.backward_100R;
+		document.getElementById("backward_50L").value = parameter_data.backward_50L;
+		document.getElementById("backward_50R").value = parameter_data.backward_50R;
+		document.getElementById("forward_x_add").value = parameter_data.forward_x_add;
+		document.getElementById("forward_x_max").value = parameter_data.forward_x_max;
+		document.getElementById("backward_x_add").value = parameter_data.backward_x_add;
+		document.getElementById("backward_x_max").value = parameter_data.backward_x_max;
+		document.getElementById("forward_initial_x").value = parameter_data.forward_initial_x;
+		document.getElementById("backward_initial_x").value = parameter_data.backward_initial_x;
+		document.getElementById("slowdown_250").value = parameter_data.slowdown_250;
+		document.getElementById("slowdown_300").value = parameter_data.slowdown_300;
+		document.getElementById("slowdown_initial_x").value = parameter_data.slowdown_initial_x;
+		document.getElementById("FRAMCOUNT").value = parameter_data.FRAMCOUNT;
+		document.getElementById("change_mode").value = parameter_data.change_mode;
+		document.getElementById("back_total_size").value = parameter_data.back_total_size;
+		document.getElementById("forward_initial_theta").value = parameter_data.forward_initial_theta;
+		document.getElementById("forward_theta_left_one").value = parameter_data.forward_theta_left_one;
+		document.getElementById("forward_theta_right_one").value = parameter_data.forward_theta_right_one;
+		document.getElementById("forward_theta_left_two").value = parameter_data.forward_theta_left_two;
+		document.getElementById("forward_theta_right_two").value = parameter_data.forward_theta_right_two;
+		document.getElementById("forward_theta_left_three").value = parameter_data.forward_theta_left_three;
+		document.getElementById("forward_theta_right_three").value = parameter_data.forward_theta_right_three;
+		document.getElementById("backward_initial_theta").value = parameter_data.backward_initial_theta;
+		document.getElementById("backward_theta_left_one").value = parameter_data.backward_theta_left_one;
+		document.getElementById("backward_theta_right_one").value = parameter_data.backward_theta_right_one;
+		document.getElementById("backward_theta_left_two").value = parameter_data.backward_theta_left_two;
+		document.getElementById("backward_theta_right_two").value = parameter_data.backward_theta_right_two;
+		document.getElementById("backward_theta_left_three").value = parameter_data.backward_theta_left_three;
+		document.getElementById("backward_theta_right_three").value = parameter_data.backward_theta_right_three;
+		document.getElementById("delay_ybtime").value = parameter_data.delay_ybtime;
+		document.getElementById("without_left").value = parameter_data.without_left;
+		document.getElementById("without_right").value = parameter_data.without_right;
+		document.getElementById("right_timeuse").value = parameter_data.right_timeuse;
+		document.getElementById("initial_timeuse").value = parameter_data.initial_timeuse;
+		document.getElementById("left_timeuse").value = parameter_data.left_timeuse;
+		document.getElementById("IMU_angle_range").value = parameter_data.IMU_angle_range;
+
+		document.getElementById("save").style.display = "inline";
+                
+            });
+
+}
+	</script>
+	<p id="connected" style="color:#00D600; display:none; font-size: 20px;">Connected</p>
+	<div align = "center">
+	<section style="float: left;">
+		<form id="form1">
+		<table>
+
+		<h1 style = "color:#FFFAFA; font-family :  Jacques Francois Shadow ;">quickchange</h1>
+		
+	   </form>
+	</div>
+
+
+			<tr>
+			<td>backward_310L = </td>
+			<td><input type="test" name="backward_310L" id="backward_310L" value="0" onchange="changeparameter(this.name,this.value)"></td>
+			</tr>
+			<tr>
+			<td>backward_310R = </td>
+			<td><input type="test" name="backward_310R" id="backward_310R" value="0" onchange="changeparameter(this.name,this.value)"></td>
+			</tr>
+			<tr>
+			<td>backward_300L = </td>
+			<td><input type="test" name="backward_300L" id="backward_300L" value="0" onchange="changeparameter(this.name,this.value)"></td>
+			</tr>
+			<tr>
+			<td>backward_300R = </td>
+			<td><input type="test" name="backward_300R" id="backward_300R" value="0" onchange="changeparameter(this.name,this.value)"></td>
+			</tr>
+			<tr>
+			<td>backward_250L = </td>
+			<td><input type="test" name="backward_250L" id="backward_250L" value="0" onchange="changeparameter(this.name,this.value)"></td>
+			</tr>
+			<tr>
+			<td>backward_250R = </td>
+			<td><input type="test" name="backward_250R" id="backward_250R" value="0" onchange="changeparameter(this.name,this.value)"></td>
+			</tr>
+			<tr>
+			<td>backward_200L = </td>
+			<td><input type="test" name="backward_200L" id="backward_200L" value="0" onchange="changeparameter(this.name,this.value)"></td>
+			</tr>
+			<tr>
+			<td>backward_200R = </td>
+			<td><input type="test" name="backward_200R" id="backward_200R" value="0" onchange="changeparameter(this.name,this.value)"></td>
+			</tr>
+			<tr>
+			<td>backward_150L = </td>
+			<td><input type="test" name="backward_150L" id="backward_150L" value="0" onchange="changeparameter(this.name,this.value)"></td>
+			</tr>
+			<tr>
+			<td>backward_150R = </td>
+			<td><input type="test" name="backward_150R" id="backward_150R" value="0" onchange="changeparameter(this.name,this.value)"></td>
+			</tr>
+			<tr>
+			<td>backward_100L = </td>
+			<td><input type="test" name="backward_100L" id="backward_100L" value="0" onchange="changeparameter(this.name,this.value)"></td>
+			</tr>
+			<tr>
+			<td>backward_100R = </td>
+			<td><input type="test" name="backward_100R" id="backward_100R" value="0" onchange="changeparameter(this.name,this.value)"></td>
+			</tr>
+			<tr>
+			<td>backward_50L = </td>
+			<td><input type="test" name="backward_50L" id="backward_50L" value="0" onchange="changeparameter(this.name,this.value)"></td>
+			</tr>
+			<tr>
+			<td>backward_50R = </td>
+			<td><input type="test" name="backward_50R" id="backward_50R" value="0" onchange="changeparameter(this.name,this.value)"></td>
+			</tr>
+			<tr>
+			<td>forward_x_add = </td>
+			<td><input type="test" name="forward_x_add" id="forward_x_add" value="0" onchange="changeparameter(this.name,this.value)"></td>
+			</tr>
+			<tr>
+			<td>forward_x_max = </td>
+			<td><input type="test" name="forward_x_max" id="forward_x_max" value="0" onchange="changeparameter(this.name,this.value)"></td>
+			</tr>
+			<tr>
+			<td>backward_x_add = </td>
+			<td><input type="test" name="backward_x_add" id="backward_x_add" value="0" onchange="changeparameter(this.name,this.value)"></td>
+			</tr>
+			<tr>
+			<td>backward_x_max = </td>
+			<td><input type="test" name="backward_x_max" id="backward_x_max" value="0" onchange="changeparameter(this.name,this.value)"></td>
+			</tr>
+			<tr>
+			<td>forward_initial_x = </td>
+			<td><input type="test" name="forward_initial_x" id="forward_initial_x" value="0" onchange="changeparameter(this.name,this.value)"></td>
+			</tr>
+			<tr>
+			<td>backward_initial_x = </td>
+			<td><input type="test" name="backward_initial_x" id="backward_initial_x" value="0" onchange="changeparameter(this.name,this.value)"></td>
+			</tr>
+			<tr>
+			<td>slowdown_250 = </td>
+			<td><input type="test" name="slowdown_250" id="slowdown_250" value="0" onchange="changeparameter(this.name,this.value)"></td>
+			</tr>
+			<tr>
+			<td>slowdown_300 = </td>
+			<td><input type="test" name="slowdown_300" id="slowdown_300" value="0" onchange="changeparameter(this.name,this.value)"></td>
+			</tr>
+			<tr>
+			<td>slowdown_initial_x = </td>
+			<td><input type="test" name="slowdown_initial_x" id="slowdown_initial_x" value="0" onchange="changeparameter(this.name,this.value)"></td>
+			</tr>
+			
+		</table>
+		
+		<table width="100%" border="1" cellspacing="2">
+			<tr>
+			<th>aruco_image</th>
+			</tr>
+			<tr>
+			<td><img id="compress_image" style="-webkit-user-select: none; display:inline;" src="http://172.17.121.10:8080/stream?topic=/final_aruco_image"></td>
+			</tr>
+		</table>
+		
+		</form>
+		
+		
+	</section>
+	<section style="float: left;">
+		<form>
+		<table>
+			<tr>
+				<td><button type="button" style="width: 80px;height: 40px" onclick="LoadParameter()">Load</button></td><tr><tr><tr><tr><tr><tr><tr><tr>
+				<td>FRAMCOUNT</td>
+				<td><input type="test" name="FRAMCOUNT" id="FRAMCOUNT" value="0" onchange="changeparameter(this.name,this.value)"></td>
+			</tr>
+			<tr>
+				<td>change_mode</td>
+				<td><input type="test" name="change_mode" id="change_mode" value="0" onchange="changeparameter(this.name,this.value)"></td>
+			</tr>
+			<tr>
+				<td>back_total_size</td>
+				<td><input type="test" name="back_total_size" id="back_total_size" value="0" onchange="changeparameter(this.name,this.value)"></td>
+			</tr>
+			<tr>
+				<td>forward_initial_theta</td>
+				<td><input type="test" name="forward_initial_theta" id="forward_initial_theta" value="0" onchange="changeparameter(this.name,this.value)"></td>
+			</tr>
+			<tr>
+				<td>forward_theta_left_one</td>
+				<td><input type="test" name="forward_theta_left_one" id="forward_theta_left_one" value="0" onchange="changeparameter(this.name,this.value)"></td>
+			</tr>
+			<tr>
+				<td>forward_theta_right_one</td>
+				<td><input type="test" name="forward_theta_right_one" id="forward_theta_right_one" value="0" onchange="changeparameter(this.name,this.value)"></td>
+			</tr>
+			<tr>
+				<td>forward_theta_left_two</td>
+				<td><input type="test" name="forward_theta_left_two" id="forward_theta_left_two" value="0" onchange="changeparameter(this.name,this.value)"></td>
+			</tr>
+			<tr>
+				<td>forward_theta_right_two</td>
+				<td><input type="test" name="forward_theta_right_two" id="forward_theta_right_two" value="0" onchange="changeparameter(this.name,this.value)"></td>
+			</tr>
+			<tr>
+				<td>forward_theta_left_three</td>
+				<td><input type="test" name="forward_theta_left_three" id="forward_theta_left_three" value="0" onchange="changeparameter(this.name,this.value)"></td>
+			</tr>
+			<tr>
+				<td>forward_theta_right_three</td>
+				<td><input type="test" name="forward_theta_right_three" id="forward_theta_right_three" value="0" onchange="changeparameter(this.name,this.value)"></td>
+			</tr>
+			<tr>
+				<td>backward_initial_theta</td>
+				<td><input type="test" name="backward_initial_theta" id="backward_initial_theta" value="0" onchange="changeparameter(this.name,this.value)"></td>
+			</tr>
+			<tr>
+				<td>backward_theta_left_one</td>
+				<td><input type="test" name="backward_theta_left_one" id="backward_theta_left_one" value="0" onchange="changeparameter(this.name,this.value)"></td>
+			</tr>
+			<tr>
+				<td>backward_theta_right_one</td>
+				<td><input type="test" name="backward_theta_right_one" id="backward_theta_right_one" value="0" onchange="changeparameter(this.name,this.value)"></td>
+			</tr>
+			<tr>
+				<td>backward_theta_left_two</td>
+				<td><input type="test" name="backward_theta_left_two" id="backward_theta_left_two" value="0" onchange="changeparameter(this.name,this.value)"></td>
+			</tr>
+			<tr>
+				<td>backward_theta_right_two</td>
+				<td><input type="test" name="backward_theta_right_two" id="backward_theta_right_two" value="0" onchange="changeparameter(this.name,this.value)"></td>
+			</tr>
+			<tr>
+				<td>backward_theta_left_three</td>
+				<td><input type="test" name="backward_theta_left_three" id="backward_theta_left_three" value="0" onchange="changeparameter(this.name,this.value)"></td>
+			</tr>
+			<tr>
+				<td>backward_theta_right_three</td>
+				<td><input type="test" name="backward_theta_right_three" id="backward_theta_right_three" value="0" onchange="changeparameter(this.name,this.value)"></td>
+			</tr>
+			<tr>
+				<td>delay_ybtime</td>
+				<td><input type="test" name="delay_ybtime" id="delay_ybtime" value="0" onchange="changeparameter(this.name,this.value)"></td>
+			</tr>
+			<tr>
+				<td>without_left</td>
+				<td><input type="test" name="without_left" id="without_left" value="0" onchange="changeparameter(this.name,this.value)"></td>
+			</tr>
+			<tr>
+				<td>without_right</td>
+				<td><input type="test" name="without_right" id="without_right" value="0" onchange="changeparameter(this.name,this.value)"></td>
+			</tr>
+			<tr>
+				<td>right_timeuse</td>
+				<td><input type="test" name="right_timeuse" id="right_timeuse" value="0" onchange="changeparameter(this.name,this.value)"></td>
+			</tr>
+			<tr>
+				<td>initial_timeuse</td>
+				<td><input type="test" name="initial_timeuse" id="initial_timeuse" value="0" onchange="changeparameter(this.name,this.value)"></td>
+			</tr>
+			<tr>
+				<td>left_timeuse</td>
+				<td><input type="test" name="left_timeuse" id="left_timeuse" value="0" onchange="changeparameter(this.name,this.value)"></td>
+			</tr>
+			<tr>
+				<td>IMU_angle_range</td>
+				<td><input type="test" name="IMU_angle_range" id="IMU_angle_range" value="0" onchange="changeparameter(this.name,this.value)"></td>
+			</tr>
+		<td><td><button type="button" style="width: 80px;height: 40px; display : none" id="save" onclick="SaveParameter()">Save</button></td>
+	    		
+		</table>
+		
+		</form>
+		
+		</section>
+		
+	</body>
+
+	
+	
+</html>

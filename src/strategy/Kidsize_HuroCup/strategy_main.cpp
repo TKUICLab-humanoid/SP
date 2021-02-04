@@ -12,6 +12,7 @@ int main(int argc, char** argv)
 
 	while (nh.ok()) 
 	{
+
 		KidsizeStrategy.strategymain();
 		ros::spinOnce();
 		loop_rate.sleep();
@@ -1012,7 +1013,7 @@ void KidsizeStrategy::GetArucoMatrix(const strategy::aruco_matrix &msg)
 }
 /****************************************************************************************************/
 void KidsizeStrategy::aruco_head_strategy(void)
-{
+{			
     if (get_arucoimage)
     {
         if (SprintInfo->SpintInfomation->SprForWard)
@@ -1027,9 +1028,9 @@ void KidsizeStrategy::aruco_head_strategy(void)
                 if (aruco_headangle > 0)
                 {
                     SprintInfo->head_motor_y -= 5.378 * aruco_headangle;
-                    if (SprintInfo->head_motor_y > 2000)
+                    if (SprintInfo->head_motor_y > 2200)
                     {
-                    SprintInfo->head_motor_y = 2000;
+                    SprintInfo->head_motor_y = 2200;
                     }
                     else if (SprintInfo->head_motor_y < 1800)
                     {

@@ -143,7 +143,7 @@ public:
 	double YBrat;
 	bool time_flag = true;
 	bool get_timeuse_flag = true;
-	bool first_in;
+	bool first_in;	
 	bool once_flag=true;
 	bool check_headerror = true;
 /**********************************************aruco************************************************/
@@ -155,13 +155,23 @@ public:
 	int aruco_headangle;
 	int aruco_headangle_limit;
 	int aruco_distence_check;
-	#define aruco_back_distence 50
+<<<<<<< HEAD
+	#define aruco_back_distence 720
+	#define ARUCODISTENCE_50  4800
+	#define ARUCODISTENCE_100 4000
+	#define ARUCODISTENCE_150 3200
+	#define ARUCODISTENCE_200 2500
+	#define ARUCODISTENCE_250 1000
+	#define ARUCODISTENCE_300 865
+=======
+	#define aruco_back_distence 695
 	#define ARUCODISTENCE_50 3115
 	#define ARUCODISTENCE_100 2250
 	#define ARUCODISTENCE_150 1700
 	#define ARUCODISTENCE_200 1200
-	#define ARUCODISTENCE_250 700
-	#define ARUCODISTENCE_300 500
+	#define ARUCODISTENCE_250 900
+	#define ARUCODISTENCE_300 800
+>>>>>>> 689a1f623280e58d3295dd264f4d24a5b51248e8
 	#define ARUCO_MIDLE_LINE_0 130 //no use
 	#define ARUCO_MIDLE_LINE_50 130
 	#define ARUCO_MIDLE_LINE_100 110

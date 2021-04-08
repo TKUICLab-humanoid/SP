@@ -1027,7 +1027,7 @@ void KidsizeStrategy::aruco_head_strategy(void)
                 tool->Delay(80);
                 if (aruco_headangle > 0)
                 {
-                    SprintInfo->head_motor_y -= 5.378 * aruco_headangle;
+                    SprintInfo->head_motor_y -= 3.378 * aruco_headangle;
                     if (SprintInfo->head_motor_y > 2200)
                     {
                     SprintInfo->head_motor_y = 2200;
@@ -1061,7 +1061,7 @@ void KidsizeStrategy::aruco_head_strategy(void)
                         SprintInfo->head_motor_y = 1400;
                     }
                 }
-                ros_com->sendHeadMotor(HeadMotorID::VerticalID, SprintInfo->head_motor_y, 1000);			//將馬達y值改為上述head_motor_y值 old_speed:211
+                ros_com->sendHeadMotor(HeadMotorID::VerticalID, SprintInfo->head_motor_y, 2000);			//將馬達y值改為上述head_motor_y值 old_speed:211
                 tool->Delay(10);
                 ros_com->sendHeadMotor(HeadMotorID::HorizontalID, 2047, 1250);								//馬達x值不動
                 tool->Delay(10);
@@ -1073,31 +1073,31 @@ void KidsizeStrategy::aruco_head_strategy(void)
         {
             if(aruco_distence <= ARUCODISTENCE_300)
             {
-                aruco_headangle_limit = 1900;
+                aruco_headangle_limit = 2200;
             }
             if(aruco_distence <= ARUCODISTENCE_250 && aruco_distence > ARUCODISTENCE_300)
             {
-                aruco_headangle_limit = 1900;
-            }
+                aruco_headangle_limit = 2200;
+            }			
             if(aruco_distence <= ARUCODISTENCE_200 && aruco_distence > ARUCODISTENCE_250)
             {
-                aruco_headangle_limit = 1900;
+                aruco_headangle_limit = 2200;
             }
             if(aruco_distence <= ARUCODISTENCE_150 && aruco_distence > ARUCODISTENCE_200)
             {
-                aruco_headangle_limit = 1900;
+                aruco_headangle_limit = 2200;
             }
             if(aruco_distence <= ARUCODISTENCE_100 && aruco_distence > ARUCODISTENCE_150)
             {
-                aruco_headangle_limit = 1900;
+                aruco_headangle_limit = 2200;
             }
             if(aruco_distence <= ARUCODISTENCE_50 && aruco_distence > ARUCODISTENCE_100)
             {
-                aruco_headangle_limit = 1900;
+                aruco_headangle_limit = 2200;
             }
             if(aruco_distence > ARUCODISTENCE_50)
             {
-                aruco_headangle_limit = 1900;
+                aruco_headangle_limit = 2200;
             }
             aruco_headmove = abs(abs(aruco_head) - 15);
             aruco_headangle = aruco_headmove * 0.2;
@@ -1288,7 +1288,7 @@ void KidsizeStrategy::aruco_do_forward(void)
     else if (total_size <= ARUCODISTENCE_300)
     {
 		ROS_INFO("300cm~");
-	    detect_aruco_direction( ARUCO_MIDLE_LINE_300 - 5, ARUCO_MIDLE_LINE_300 + 5, forward_theta_left_three, forward_theta_right_three);
+	    detect_aruco_direction( ARUCO_MIDLE_LINE_300 - 1, ARUCO_MIDLE_LINE_300 + 1, forward_theta_left_three, forward_theta_right_three);
 	    SprintInfo->SpintInfomation->send_x = max(slowdown_initial_x, SprintInfo->SpintInfomation->send_x - slowdown_300);
     }
     ROS_INFO("~~~~~~aruco_do_forward information end~~~~~~");

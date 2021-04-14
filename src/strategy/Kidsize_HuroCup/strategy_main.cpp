@@ -1288,7 +1288,7 @@ void KidsizeStrategy::aruco_do_forward(void)
     else if (total_size <= ARUCODISTENCE_300)
     {
 		ROS_INFO("300cm~");
-	    detect_aruco_direction( ARUCO_MIDLE_LINE_300 - 1, ARUCO_MIDLE_LINE_300 + 1, forward_theta_left_three, forward_theta_right_three);
+	    detect_aruco_direction( ARUCO_MIDLE_LINE_300 - 5, ARUCO_MIDLE_LINE_300 + 5, forward_theta_left_three, forward_theta_right_three);
 	    SprintInfo->SpintInfomation->send_x = max(slowdown_initial_x, SprintInfo->SpintInfomation->send_x - slowdown_300);
     }
     ROS_INFO("~~~~~~aruco_do_forward information end~~~~~~");

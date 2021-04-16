@@ -155,20 +155,21 @@ public:
 	int aruco_headangle;
 	int aruco_headangle_limit;
 	int aruco_distence_check;
-	#define aruco_back_distence 695
-	#define ARUCODISTENCE_50 3115
-	#define ARUCODISTENCE_100 2250
-	#define ARUCODISTENCE_150 1700
-	#define ARUCODISTENCE_200 1200
-	#define ARUCODISTENCE_250 900
-	#define ARUCODISTENCE_300 800
+	#define aruco_back_distence 745	
+	#define ARUCODISTENCE_50  5000
+	#define ARUCODISTENCE_100 4000
+	#define ARUCODISTENCE_150 3000
+	#define ARUCODISTENCE_200 2000
+	#define ARUCODISTENCE_250 950	
+	#define ARUCODISTENCE_300 830
 	#define ARUCO_MIDLE_LINE_0 130 //no use
-	#define ARUCO_MIDLE_LINE_50 130
-	#define ARUCO_MIDLE_LINE_100 110
-	#define ARUCO_MIDLE_LINE_150 90
-	#define ARUCO_MIDLE_LINE_200 60
-	#define ARUCO_MIDLE_LINE_250 35
-	#define ARUCO_MIDLE_LINE_300 25
+	#define ARUCO_MIDLE_LINE_50 220
+	#define ARUCO_MIDLE_LINE_100 180
+	#define ARUCO_MIDLE_LINE_150 140
+	#define ARUCO_MIDLE_LINE_200 100
+	#define ARUCO_MIDLE_LINE_250 65
+	#define ARUCO_MIDLE_LINE_300 32
+
 
 	string parameter_path = "N";
 };

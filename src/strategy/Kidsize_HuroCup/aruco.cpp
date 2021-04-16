@@ -24,7 +24,7 @@ void arucoimage::arucomain()
     	//image_transport::ImageTransport it(nh);
     	//inputimage.open(1);
 
-    	cv::Ptr<cv::aruco::Dictionary> dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_ARUCO_ORIGINAL);
+    	cv::Ptr<cv::aruco::Dictionary> dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_5X5_250);
     	cameraMatrix = (Mat_<double>(3, 3) << 929.087, 0, 509.582, 0, 911.194, 196.78, 0, 0, 1);
     	distCoeffs = (Mat_<double>(14, 1) << 3.09144, -62.9916, -0.0113575, 0.106171, 173.466,2.65127,-59.7773,165.194,0,0,0,0,0,0);    
     	//inputimage.grab();

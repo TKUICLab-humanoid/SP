@@ -1051,7 +1051,7 @@ void KidsizeStrategy::aruco_head_strategy(void)
                 tool->Delay(80);
                 if (aruco_headangle > 0)
                 {
-                    SprintInfo->head_motor_y -= 9.378 * aruco_headangle;
+                    SprintInfo->head_motor_y -= 12.378 * aruco_headangle;
                     if (SprintInfo->head_motor_y > 1800)
                     {
                     SprintInfo->head_motor_y = 1800;

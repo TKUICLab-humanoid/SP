@@ -1,5 +1,5 @@
 #include "strategy/strategy_main.h"
-
+int tao=0;
 int main(int argc, char** argv)
 {
 	ros::init(argc, argv, "kidsize");
@@ -1051,7 +1051,7 @@ void KidsizeStrategy::aruco_head_strategy(void)
                 tool->Delay(80);
                 if (aruco_headangle > 0)
                 {
-                    SprintInfo->head_motor_y -= 12.378 * aruco_headangle;
+                    SprintInfo->head_motor_y -= 14.878 * aruco_headangle;
                     if (SprintInfo->head_motor_y > 1800)
                     {
                     SprintInfo->head_motor_y = 1800;
@@ -1099,7 +1099,7 @@ void KidsizeStrategy::aruco_head_strategy(void)
             {
                 aruco_headangle_limit = 2200;
             }
-            aruco_headmove = abs(abs(aruco_head) - 15);
+            /*aruco_headmove = abs(abs(aruco_head) - 15);
             aruco_headangle = aruco_headmove * 0.2;
             if (aruco_headangle > 0)
             {
@@ -1112,7 +1112,7 @@ void KidsizeStrategy::aruco_head_strategy(void)
                 {
                     SprintInfo->head_motor_y = 1400;
                 }
-            }
+            }*/
             ros_com->sendHeadMotor(HeadMotorID::VerticalID, SprintInfo->head_motor_y, 1000);			//將馬達y值改為上述head_motor_y值 old_speed:211
             tool->Delay(10);
             ros_com->sendHeadMotor(HeadMotorID::HorizontalID, 2047, 1250);								//馬達x值不動
@@ -1128,6 +1128,7 @@ void KidsizeStrategy::aruco_move_strategy(void)
 		if (SprintInfo->SpintInfomation->SprForWard)                                                                    //是否前進中
 		{
 			aruco_do_forward();
+			tao=1;
 			if (aruco_distence < aruco_back_distence)                                                                 //判斷是否後退走
 			{
 				ROS_INFO("~~~~~~aruco turn Backward~~~~~~");
@@ -1155,10 +1156,37 @@ void KidsizeStrategy::aruco_move_strategy(void)
 	else                                                                                                          //沒抓到目標
 	{
 		ROS_INFO("aruco lost target!\n");
-		if (SprintInfo->SpintInfomation->SprForWard)
+		if (SprintInfo->SpintInfomation->SprForWard && tao==0)
 		{
-			SprintInfo->SpintInfomation->send_x = min(forward_x_max, SprintInfo->SpintInfomation->send_x);              //send_x不超出forward_x_max，前進小於極限值
+			
+			SprintInfo->SpintInfomation->send_x = min(forward_x_max, SprintInfo->SpintInfomation->send_x + forward_x_add);
+		    if(SprintInfo->IMU_now <= SprintInfo->IMU_right)
+                {
+                    
+                    SprintInfo->SpintInfomation->send_theta = forward_initial_theta + forward_theta_left_one;                              
+                        printf("\nturn right,send_theta=%d\n",SprintInfo->SpintInfomation->send_theta);
+                }
+	    	    else if(SprintInfo->IMU_now >= SprintInfo->IMU_left)
+                {
+                    SprintInfo->SpintInfomation->send_theta = forward_initial_theta + forward_theta_right_one;                            
+                    printf("\nturn left,send_theta=%d\n",SprintInfo->SpintInfomation->send_theta);
+                }
  		}
+    		else if(SprintInfo->SpintInfomation->SprForWard && tao==1)
+		{   		
+		    SprintInfo->SpintInfomation->send_x = min(forward_x_max, SprintInfo->SpintInfomation->send_x);              //send_x不超出forward_x_max，前進小於極限值
+		    if(SprintInfo->IMU_now <= SprintInfo->IMU_right)
+                {
+                    
+                    SprintInfo->SpintInfomation->send_theta = forward_initial_theta + forward_theta_left_one;                              
+                        printf("\nturn right,send_theta=%d\n",SprintInfo->SpintInfomation->send_theta);
+                }
+	    	    else if(SprintInfo->IMU_now >= SprintInfo->IMU_left)
+                {
+                    SprintInfo->SpintInfomation->send_theta = forward_initial_theta + forward_theta_right_one;                            
+                    printf("\nturn left,send_theta=%d\n",SprintInfo->SpintInfomation->send_theta);
+                }
+		}
 		else
 		{
                if(SprintInfo->IMU_now <= SprintInfo->IMU_right)

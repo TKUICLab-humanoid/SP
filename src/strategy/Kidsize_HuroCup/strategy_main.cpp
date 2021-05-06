@@ -1,5 +1,7 @@
 #include "strategy/strategy_main.h"
 int tao=0;
+int jing=0;
+int aa=500;
 int main(int argc, char** argv)
 {
 	ros::init(argc, argv, "kidsize");
@@ -30,6 +32,8 @@ void KidsizeStrategy::strategymain()
         printf("\nIMU_right= %1.5f\n",SprintInfo->IMU_right);
         printf("\nIMU_left= %1.5f\n",SprintInfo->IMU_left);
         printf("\n time_flag=%d\n",time_flag);
+	printf("\n jing=%d aa=%d\n",jing,aa);
+
         
 		strategy_info->get_image_flag = true;
 		ros_com->drawImageFunction(1, DrawMode::DrawLine, 0, 320, 120, 120, 152, 245, 255);
@@ -1158,8 +1162,14 @@ void KidsizeStrategy::aruco_move_strategy(void)
 		ROS_INFO("aruco lost target!\n");
 		if (SprintInfo->SpintInfomation->SprForWard && tao==0)
 		{
+			for(jing=0;jing<=2;jing++)
+		{
+			int aa=500;
+			SprintInfo->SpintInfomation->send_x = min(forward_x_max, SprintInfo->SpintInfomation->send_x + aa); 	
+			tool->Delay(500);
 			
-			SprintInfo->SpintInfomation->send_x = min(forward_x_max, SprintInfo->SpintInfomation->send_x + forward_x_add);
+		}
+			
 		    if(SprintInfo->IMU_now <= SprintInfo->IMU_right)
                 {
                     
@@ -1174,7 +1184,10 @@ void KidsizeStrategy::aruco_move_strategy(void)
  		}
     		else if(SprintInfo->SpintInfomation->SprForWard && tao==1)
 		{   		
-		    SprintInfo->SpintInfomation->send_x = min(forward_x_max, SprintInfo->SpintInfomation->send_x);              //send_x不超出forward_x_max，前進小於極限值
+		    SprintInfo->SpintInfomation->send_x = min(forward_x_max, SprintInfo->SpintInfomation->send_x+forward_x_add);              //send_x不超出forward_x_max，前進小於極限值'
+		  
+		    
+		   
 		    if(SprintInfo->IMU_now <= SprintInfo->IMU_right)
                 {
                     

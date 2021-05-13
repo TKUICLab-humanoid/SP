@@ -1,7 +1,6 @@
 #include "strategy/strategy_main.h"
 int tao=0;
 int jing=0;
-int aa=500;
 int main(int argc, char** argv)
 {
 	ros::init(argc, argv, "kidsize");
@@ -32,7 +31,7 @@ void KidsizeStrategy::strategymain()
         printf("\nIMU_right= %1.5f\n",SprintInfo->IMU_right);
         printf("\nIMU_left= %1.5f\n",SprintInfo->IMU_left);
         printf("\n time_flag=%d\n",time_flag);
-	printf("\n jing=%d aa=%d\n",jing,aa);
+	//printf("\n send_x=%d\n",send_x);
 
         
 		strategy_info->get_image_flag = true;
@@ -1031,7 +1030,7 @@ void KidsizeStrategy::aruco_head_strategy(void)
                 tool->Delay(80);
                 if (aruco_headangle > 0)
                 {
-                    SprintInfo->head_motor_y -= 3.378 * aruco_headangle;
+                    SprintInfo->head_motor_y -= 5.378 * aruco_headangle;
                     if (SprintInfo->head_motor_y > 2200)
                     {
                     SprintInfo->head_motor_y = 2200;
@@ -1055,7 +1054,7 @@ void KidsizeStrategy::aruco_head_strategy(void)
                 tool->Delay(80);
                 if (aruco_headangle > 0)
                 {
-                    SprintInfo->head_motor_y -= 14.878 * aruco_headangle;
+                    SprintInfo->head_motor_y -= 15.378 * aruco_headangle;
                     if (SprintInfo->head_motor_y > 1800)
                     {
                     SprintInfo->head_motor_y = 1800;
@@ -1074,7 +1073,9 @@ void KidsizeStrategy::aruco_head_strategy(void)
 
         }
         else
-        {
+        {	
+	    ros_com->sendHeadMotor(HeadMotorID::VerticalID, 2200, 1000);			//將馬達y值改為上述head_motor_y值 old_speed:211
+            tool->Delay(10);
             if(aruco_distence <= ARUCODISTENCE_300)
             {
                 aruco_headangle_limit = 2200;
@@ -1117,8 +1118,8 @@ void KidsizeStrategy::aruco_head_strategy(void)
                     SprintInfo->head_motor_y = 1400;
                 }
             }*/
-            ros_com->sendHeadMotor(HeadMotorID::VerticalID, SprintInfo->head_motor_y, 1000);			//將馬達y值改為上述head_motor_y值 old_speed:211
-            tool->Delay(10);
+            /*ros_com->sendHeadMotor(HeadMotorID::VerticalID, SprintInfo->head_motor_y, 1000);			//將馬達y值改為上述head_motor_y值 old_speed:211
+            tool->Delay(10);*/
             ros_com->sendHeadMotor(HeadMotorID::HorizontalID, 2047, 1250);								//馬達x值不動
             tool->Delay(10);
         }
@@ -1164,9 +1165,10 @@ void KidsizeStrategy::aruco_move_strategy(void)
 		{
 			for(jing=0;jing<=2;jing++)
 		{
-			int aa=500;
-			SprintInfo->SpintInfomation->send_x = min(forward_x_max, SprintInfo->SpintInfomation->send_x + aa); 	
-			tool->Delay(500);
+			int aa=100;
+			SprintInfo->SpintInfomation->send_x = min(forward_x_max, SprintInfo->SpintInfomation->send_x + aa); 
+			printf("\nsend_x=%d\n",SprintInfo->SpintInfomation->send_x);	
+			tool->Delay(100);
 			
 		}
 			
@@ -1184,10 +1186,15 @@ void KidsizeStrategy::aruco_move_strategy(void)
  		}
     		else if(SprintInfo->SpintInfomation->SprForWard && tao==1)
 		{   		
-		    SprintInfo->SpintInfomation->send_x = min(forward_x_max, SprintInfo->SpintInfomation->send_x+forward_x_add);              //send_x不超出forward_x_max，前進小於極限值'
-		  
-		    
-		   
+		    for(jing=0;jing<=2;jing++)
+		{
+			int aa=100;
+			SprintInfo->SpintInfomation->send_x = min(forward_x_max, SprintInfo->SpintInfomation->send_x + aa); 	
+			printf("\nsend_x=%d\n",SprintInfo->SpintInfomation->send_x);
+			tool->Delay(100);
+			
+		}
+		
 		    if(SprintInfo->IMU_now <= SprintInfo->IMU_right)
                 {
                     
@@ -1202,7 +1209,15 @@ void KidsizeStrategy::aruco_move_strategy(void)
 		}
 		else
 		{
-               if(SprintInfo->IMU_now <= SprintInfo->IMU_right)
+              	   for(jing=0;jing<=2;jing++)
+		{
+			int aa=100;
+			SprintInfo->SpintInfomation->send_x = max(backward_x_max, SprintInfo->SpintInfomation->send_x - aa); 	
+			printf("\nsend_x=%d\n",SprintInfo->SpintInfomation->send_x);
+			tool->Delay(100);
+			
+		}
+		 if(SprintInfo->IMU_now <= SprintInfo->IMU_right)
                 {
                     
                     SprintInfo->SpintInfomation->send_theta = backward_initial_theta + backward_theta_left_three;                              

@@ -1,5 +1,5 @@
 #include "strategy/strategy_main.h"
-int tao=0;
+int tao=0; 
 int jing=0;
 int main(int argc, char** argv)
 {
@@ -311,8 +311,7 @@ tmp_b_size=0;
 }
 /****************************************************************************************************/
 void KidsizeStrategy::classify_strategy(void)
-{
-    //使用的影像處理
+{    //使用的影像處理
     double tmpx, tmpy;
 
     SprintInfo->SpintInfomation->get_target = false;
@@ -1054,7 +1053,7 @@ void KidsizeStrategy::aruco_head_strategy(void)
                 tool->Delay(80);
                 if (aruco_headangle > 0)
                 {
-                    SprintInfo->head_motor_y -= 15.878 * aruco_headangle;
+                    SprintInfo->head_motor_y -= 16.378 * aruco_headangle;
                     if (SprintInfo->head_motor_y > 1800)
                     {
                     SprintInfo->head_motor_y = 1800;

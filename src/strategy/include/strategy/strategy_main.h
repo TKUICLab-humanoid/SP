@@ -155,13 +155,13 @@ public:
 	int aruco_headangle;
 	int aruco_headangle_limit;
 	int aruco_distence_check;
-	#define aruco_back_distence 850
+	#define aruco_back_distence 1000
 	#define ARUCODISTENCE_50  5000
 	#define ARUCODISTENCE_100 4000
 	#define ARUCODISTENCE_150 3000
-	#define ARUCODISTENCE_200 2000
-	#define ARUCODISTENCE_250 1000	
-	#define ARUCODISTENCE_300 900
+	#define ARUCODISTENCE_200 2500
+	#define ARUCODISTENCE_250 1400	
+	#define ARUCODISTENCE_300 1100
 	#define ARUCO_MIDLE_LINE_0 130 //no use
 	#define ARUCO_MIDLE_LINE_50 220
 	#define ARUCO_MIDLE_LINE_100 180

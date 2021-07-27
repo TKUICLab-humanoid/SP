@@ -1214,7 +1214,7 @@ void KidsizeStrategy::aruco_move_strategy(void)
 			int aa=100;
 			SprintInfo->SpintInfomation->send_x = max(backward_x_max, SprintInfo->SpintInfomation->send_x - aa); 	
 			printf("\nsend_x=%d\n",SprintInfo->SpintInfomation->send_x);
-			tool->Delay(100);
+			tool->Delay(200);
 			
 		}
 		 if(SprintInfo->IMU_now <= SprintInfo->IMU_right)

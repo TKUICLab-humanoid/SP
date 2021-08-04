@@ -33,7 +33,7 @@ void KidsizeStrategy::strategymain()
         printf("\nIMU_left= %1.5f\n",SprintInfo->IMU_left);
         printf("\n time_flag=%d\n",time_flag);
 	printf("\n tao=%d\n",tao);
-	//printf("\n send_x=%d\n",send_x);
+	printf("\nsend_x=%d\n",SprintInfo->SpintInfomation->send_x);
 
         
 		strategy_info->get_image_flag = true;
@@ -1031,7 +1031,7 @@ void KidsizeStrategy::aruco_head_strategy(void)
                 tool->Delay(80);
                 if (aruco_headangle > 0)
                 {
-                    SprintInfo->head_motor_y -= 5.378 * aruco_headangle;
+                    SprintInfo->head_motor_y -= 10.378 * aruco_headangle;
                     if (SprintInfo->head_motor_y > 2200)
                     {
                     SprintInfo->head_motor_y = 2200;
@@ -1170,9 +1170,7 @@ void KidsizeStrategy::aruco_move_strategy(void)
 		{
 			int aa=100;
 			SprintInfo->SpintInfomation->send_x = min(forward_x_max, SprintInfo->SpintInfomation->send_x + aa); 
-			printf("\nsend_x=%d\n",SprintInfo->SpintInfomation->send_x);
-				
-			tool->Delay(100);
+			tool->Delay(150);
 			
 		}
 			
@@ -1194,8 +1192,7 @@ void KidsizeStrategy::aruco_move_strategy(void)
 		{
 			int aa=100;
 			SprintInfo->SpintInfomation->send_x = min(forward_x_max, SprintInfo->SpintInfomation->send_x + aa); 	
-			printf("\nsend_x=%d\n",SprintInfo->SpintInfomation->send_x);
-			tool->Delay(100);
+			tool->Delay(150);
 			
 		}
 		
@@ -1231,7 +1228,7 @@ void KidsizeStrategy::aruco_move_strategy(void)
 		{
 			int aa=100;
 			SprintInfo->SpintInfomation->send_x = max(backward_x_max, SprintInfo->SpintInfomation->send_x - aa); 	
-			printf("\nsend_x=%d\n",SprintInfo->SpintInfomation->send_x);
+			//printf("\nsend_x=%d\n",SprintInfo->SpintInfomation->send_x);
 			tool->Delay(200);
 			
 		}

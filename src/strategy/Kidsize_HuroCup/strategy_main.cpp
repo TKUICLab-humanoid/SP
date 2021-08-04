@@ -1,5 +1,7 @@
 #include "strategy/strategy_main.h"
-
+int tao; 
+int p=1;
+int jing=0;
 int main(int argc, char** argv)
 {
 	ros::init(argc, argv, "kidsize");
@@ -30,6 +32,9 @@ void KidsizeStrategy::strategymain()
         printf("\nIMU_right= %1.5f\n",SprintInfo->IMU_right);
         printf("\nIMU_left= %1.5f\n",SprintInfo->IMU_left);
         printf("\n time_flag=%d\n",time_flag);
+	printf("\n tao=%d\n",tao);
+	printf("\nsend_x=%d\n",SprintInfo->SpintInfomation->send_x);
+
         
 		strategy_info->get_image_flag = true;
 		ros_com->drawImageFunction(1, DrawMode::DrawLine, 0, 320, 120, 120, 152, 245, 255);
@@ -59,7 +64,7 @@ void KidsizeStrategy::strategymain()
 			timeuse = 0;
 		}
         if(change_mode == 2)                                            //if change_mode == 2 means aruco
-        {
+        {	tao=0;
 			aruco_head_strategy();
             aruco_move_strategy();
             ROS_INFO("send_theta = %1.5f", SprintInfo->SpintInfomation->send_theta);
@@ -308,8 +313,7 @@ tmp_b_size=0;
 }
 /****************************************************************************************************/
 void KidsizeStrategy::classify_strategy(void)
-{
-    //使用的影像處理
+{    //使用的影像處理
     double tmpx, tmpy;
 
     SprintInfo->SpintInfomation->get_target = false;
@@ -1027,7 +1031,7 @@ void KidsizeStrategy::aruco_head_strategy(void)
                 tool->Delay(80);
                 if (aruco_headangle > 0)
                 {
-                    SprintInfo->head_motor_y -= 3.378 * aruco_headangle;
+                    SprintInfo->head_motor_y -= 10.378 * aruco_headangle;
                     if (SprintInfo->head_motor_y > 2200)
                     {
                     SprintInfo->head_motor_y = 2200;
@@ -1051,7 +1055,7 @@ void KidsizeStrategy::aruco_head_strategy(void)
                 tool->Delay(80);
                 if (aruco_headangle > 0)
                 {
-                    SprintInfo->head_motor_y -= 12.378 * aruco_headangle;
+                    SprintInfo->head_motor_y -= 16.378 * aruco_headangle;
                     if (SprintInfo->head_motor_y > 1800)
                     {
                     SprintInfo->head_motor_y = 1800;
@@ -1070,7 +1074,9 @@ void KidsizeStrategy::aruco_head_strategy(void)
 
         }
         else
-        {
+        {	
+	    ros_com->sendHeadMotor(HeadMotorID::VerticalID, 2200, 1000);			//將馬達y值改為上述head_motor_y值 old_speed:211
+            tool->Delay(10);
             if(aruco_distence <= ARUCODISTENCE_300)
             {
                 aruco_headangle_limit = 2200;
@@ -1099,7 +1105,7 @@ void KidsizeStrategy::aruco_head_strategy(void)
             {
                 aruco_headangle_limit = 2200;
             }
-            aruco_headmove = abs(abs(aruco_head) - 15);
+            /*aruco_headmove = abs(abs(aruco_head) - 15);
             aruco_headangle = aruco_headmove * 0.2;
             if (aruco_headangle > 0)
             {
@@ -1112,27 +1118,30 @@ void KidsizeStrategy::aruco_head_strategy(void)
                 {
                     SprintInfo->head_motor_y = 1400;
                 }
-            }
-            ros_com->sendHeadMotor(HeadMotorID::VerticalID, SprintInfo->head_motor_y, 1000);			//將馬達y值改為上述head_motor_y值 old_speed:211
-            tool->Delay(10);
+            }*/
+            /*ros_com->sendHeadMotor(HeadMotorID::VerticalID, SprintInfo->head_motor_y, 1000);			//將馬達y值改為上述head_motor_y值 old_speed:211
+            tool->Delay(10);*/
             ros_com->sendHeadMotor(HeadMotorID::HorizontalID, 2047, 1250);								//馬達x值不動
             tool->Delay(10);
         }
     }
 }
 void KidsizeStrategy::aruco_move_strategy(void)
-{
+{	
+	
 	if (get_arucoimage)              
                                                                                        //if mode==1 and back it will be true
 	{
 		if (SprintInfo->SpintInfomation->SprForWard)                                                                    //是否前進中
 		{
 			aruco_do_forward();
+			tao=p;
 			if (aruco_distence < aruco_back_distence)                                                                 //判斷是否後退走
 			{
 				ROS_INFO("~~~~~~aruco turn Backward~~~~~~");
 				SprintInfo->SpintInfomation->checkback_cnt++;
 				SprintInfo->SpintInfomation->send_x = slowdown_initial_x;                                               //步態X軸參數
+				
 			}
 			else
 			{
@@ -1155,13 +1164,75 @@ void KidsizeStrategy::aruco_move_strategy(void)
 	else                                                                                                          //沒抓到目標
 	{
 		ROS_INFO("aruco lost target!\n");
-		if (SprintInfo->SpintInfomation->SprForWard)
+		if (SprintInfo->SpintInfomation->SprForWard && tao==0)
 		{
-			SprintInfo->SpintInfomation->send_x = min(forward_x_max, SprintInfo->SpintInfomation->send_x);              //send_x不超出forward_x_max，前進小於極限值
+			for(jing=0;jing<=2;jing++)
+		{
+			int aa=100;
+			SprintInfo->SpintInfomation->send_x = min(forward_x_max, SprintInfo->SpintInfomation->send_x + aa); 
+			tool->Delay(150);
+			
+		}
+			
+		    if(SprintInfo->IMU_now <= SprintInfo->IMU_right)
+                {
+                    
+                    SprintInfo->SpintInfomation->send_theta = forward_initial_theta + forward_theta_left_one;                              
+                        printf("\nturn right,send_theta=%d\n",SprintInfo->SpintInfomation->send_theta);
+                }
+	    	    else if(SprintInfo->IMU_now >= SprintInfo->IMU_left)
+                {
+                    SprintInfo->SpintInfomation->send_theta = forward_initial_theta + forward_theta_right_one;                            
+                    printf("\nturn left,send_theta=%d\n",SprintInfo->SpintInfomation->send_theta);
+                }
  		}
+    		else if(SprintInfo->SpintInfomation->SprForWard && tao==1)
+		{   		
+		    for(jing=0;jing<=2;jing++)
+		{
+			int aa=100;
+			SprintInfo->SpintInfomation->send_x = min(forward_x_max, SprintInfo->SpintInfomation->send_x + aa); 	
+			tool->Delay(150);
+			
+		}
+		
+		    if(SprintInfo->IMU_now <= SprintInfo->IMU_right)
+                {
+                    
+                    SprintInfo->SpintInfomation->send_theta = forward_initial_theta + forward_theta_left_one;                              
+                        printf("\nturn right,send_theta=%d\n",SprintInfo->SpintInfomation->send_theta);
+                }
+	    	    else if(SprintInfo->IMU_now >= SprintInfo->IMU_left)
+                {
+                    SprintInfo->SpintInfomation->send_theta = forward_initial_theta + forward_theta_right_one;                            
+                    printf("\nturn left,send_theta=%d\n",SprintInfo->SpintInfomation->send_theta);
+                }
+		}
+		else if(SprintInfo->SpintInfomation->SprForWard && tao==2)
+		{
+		 if(SprintInfo->IMU_now <= SprintInfo->IMU_right)
+                {
+                    
+                    SprintInfo->SpintInfomation->send_theta = forward_initial_theta + forward_theta_left_one;                              
+                        printf("\nturn right,send_theta=%d\n",SprintInfo->SpintInfomation->send_theta);
+                }
+	    	    else if(SprintInfo->IMU_now >= SprintInfo->IMU_left)
+                {
+                    SprintInfo->SpintInfomation->send_theta = forward_initial_theta + forward_theta_right_one;                            
+                    printf("\nturn left,send_theta=%d\n",SprintInfo->SpintInfomation->send_theta);
+                }
+		}
 		else
 		{
-               if(SprintInfo->IMU_now <= SprintInfo->IMU_right)
+              	   for(jing=0;jing<=2;jing++)
+		{
+			int aa=100;
+			SprintInfo->SpintInfomation->send_x = max(backward_x_max, SprintInfo->SpintInfomation->send_x - aa); 	
+			//printf("\nsend_x=%d\n",SprintInfo->SpintInfomation->send_x);
+			tool->Delay(200);
+			
+		}
+		 if(SprintInfo->IMU_now <= SprintInfo->IMU_right)
                 {
                     
                     SprintInfo->SpintInfomation->send_theta = backward_initial_theta + backward_theta_left_three;                              
@@ -1280,16 +1351,19 @@ void KidsizeStrategy::aruco_do_forward(void)
         SprintInfo->SpintInfomation->send_x = min(forward_x_max, SprintInfo->SpintInfomation->send_x + forward_x_add);
     }
     else if ((aruco_distence <= ARUCODISTENCE_250) && (aruco_distence > ARUCODISTENCE_300))
-    {
+    {	
         ROS_INFO("250cm~300cm");
         detect_aruco_direction( ARUCO_MIDLE_LINE_300 - 5, ARUCO_MIDLE_LINE_300 + 5, forward_theta_left_three, forward_theta_right_three);
         SprintInfo->SpintInfomation->send_x = max(slowdown_initial_x, SprintInfo->SpintInfomation->send_x - slowdown_250);
+	p=2;
     }
     else if (total_size <= ARUCODISTENCE_300)
     {
 		ROS_INFO("300cm~");
 	    detect_aruco_direction( ARUCO_MIDLE_LINE_300 - 5, ARUCO_MIDLE_LINE_300 + 5, forward_theta_left_three, forward_theta_right_three);
 	    SprintInfo->SpintInfomation->send_x = max(slowdown_initial_x, SprintInfo->SpintInfomation->send_x - slowdown_300);
+	    p=2;
+
     }
     ROS_INFO("~~~~~~aruco_do_forward information end~~~~~~");
 }

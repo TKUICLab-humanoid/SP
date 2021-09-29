@@ -266,7 +266,7 @@ void KidsizeStrategy::determine_object(void)
     for (yellow_cnt = 0; yellow_cnt < strategy_info->color_mask_subject_cnts[(int)LabelModel::Yellow]; yellow_cnt++) //黃色數量
     {
         //ROS_INFO("Yc = %d",strategy_info->color_mask_subject_cnts[(int)LabelModel::Yellow]);
-        for (blue_cnt = 0; blue_cnt < strategy_info->color_mask_subject_cnts[(int)LabelModel::Blue]; blue_cnt++) //藍色數量
+        /*for (blue_cnt = 0; blue_cnt < strategy_info->color_mask_subject_cnts[(int)LabelModel::Blue]; blue_cnt++) //藍色數量
         {
 				if (strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].XMax < strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].XMax) //Blue右邊界一定在Yellow之右
 				{
@@ -289,30 +289,30 @@ void KidsizeStrategy::determine_object(void)
 													if(((strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].YMax-strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].YMin)/(strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].XMax-strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].XMin))>(0.4))//右側(藍)色塊之Y/X 大於0.4(濾除扁形長方體雜訊)
 													{
 														if(((strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].YMax-strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].YMin)/(strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].XMax-strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].XMin))>(0.4))//左側(黃)色塊之Y/X 大於0.4(濾除扁形長方體雜訊)
-														{
-															if((strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].size>tmp_b_size)&&(strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].size>tmp_y_size)){	//選擇符合條件的物體中最大之目標物
-														
+														{*/
+															if(strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].size>tmp_y_size)	//選擇符合條件的物體中最大之目標物
+                                                            {
 																SprintInfo->SpintInfomation->ArrayYellow[etXMax] = strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].XMax;
 																SprintInfo->SpintInfomation->ArrayYellow[etXMin] = strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].XMin;
 																SprintInfo->SpintInfomation->ArrayYellow[etYMax] = strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].YMax;
 																SprintInfo->SpintInfomation->ArrayYellow[etYMin] = strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].YMin;
-
+                                                                /*
 																SprintInfo->SpintInfomation->ArrayBlue[etXMax] = strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].XMax; //攝影機看到的=ImageUnit->ObjectList[(int)LabelModel::Blue]->ObjectInfoList[blue_cnt].XMax
 																SprintInfo->SpintInfomation->ArrayBlue[etXMin] = strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].XMin;
 																SprintInfo->SpintInfomation->ArrayBlue[etYMax] = strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].YMax;
 																SprintInfo->SpintInfomation->ArrayBlue[etYMin] = strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].YMin;
-
+                                                                */
 																SprintInfo->SpintInfomation->ArrayYellow[etSize] = strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].size;
-																SprintInfo->SpintInfomation->ArrayBlue[etSize] = strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].size;//record y and b size to compare next
+																//SprintInfo->SpintInfomation->ArrayBlue[etSize] = strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].size;//record y and b size to compare next
 																tmp_y_size=strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].size;
-																tmp_b_size=strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].size;
+																//tmp_b_size=strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].size;
 
 																ros_com->drawImageFunction(1, DrawMode::DrawObject, strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].XMin, strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].XMax, strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].YMin, strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].YMax, 255, 255, 0);
-																ros_com->drawImageFunction(2, DrawMode::DrawObject, strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].XMin, strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].XMax, strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].YMin, strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].YMax, 255, 255, 0);
+																//ros_com->drawImageFunction(2, DrawMode::DrawObject, strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].XMin, strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].XMax, strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].YMin, strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].YMax, 255, 255, 0);
 
 																SprintInfo->SpintInfomation->get_target = true; //抓到目標物
 															}
-														}
+														/*}
 													}
 												}
 
@@ -324,7 +324,7 @@ void KidsizeStrategy::determine_object(void)
 						}
 					}
 				}
-        }
+        }*/
     }
 tmp_y_size=0;
 tmp_b_size=0;
@@ -339,11 +339,13 @@ void KidsizeStrategy::classify_strategy(void)
 
     if (SprintInfo->SpintInfomation->get_target)
     {
-        SprintInfo->center_y = ((SprintInfo->SpintInfomation->ArrayBlue[etYMin] + SprintInfo->SpintInfomation->ArrayBlue[etYMax]) / 2 +  (SprintInfo->SpintInfomation->ArrayYellow[etYMin] + SprintInfo->SpintInfomation->ArrayYellow[etYMax]) / 2) / 2; //雙色球中心點的y
-        SprintInfo->center_x = ((SprintInfo->SpintInfomation->ArrayBlue[etXMin] + SprintInfo->SpintInfomation->ArrayBlue[etXMax]) / 2 +  (SprintInfo->SpintInfomation->ArrayYellow[etXMin] + SprintInfo->SpintInfomation->ArrayYellow[etXMax]) / 2) / 2; //雙色球中心點的x
-        total_size = SprintInfo->SpintInfomation->ArrayYellow[etSize] + SprintInfo->SpintInfomation->ArrayBlue[etSize];
+        //SprintInfo->center_y = ((SprintInfo->SpintInfomation->ArrayBlue[etYMin] + SprintInfo->SpintInfomation->ArrayBlue[etYMax]) / 2 +  (SprintInfo->SpintInfomation->ArrayYellow[etYMin] + SprintInfo->SpintInfomation->ArrayYellow[etYMax]) / 2) / 2; //雙色球中心點的y
+        //SprintInfo->center_x = ((SprintInfo->SpintInfomation->ArrayBlue[etXMin] + SprintInfo->SpintInfomation->ArrayBlue[etXMax]) / 2 +  (SprintInfo->SpintInfomation->ArrayYellow[etXMin] + SprintInfo->SpintInfomation->ArrayYellow[etXMax]) / 2) / 2; //雙色球中心點的x
+        SprintInfo->center_y = (SprintInfo->SpintInfomation->ArrayYellow[etYMin] + SprintInfo->SpintInfomation->ArrayYellow[etYMax]) / 2 ;//+  (SprintInfo->SpintInfomation->ArrayBlue[etYMin] + SprintInfo->SpintInfomation->ArrayBlue[etYMax]) / 2) / 2; //雙色球中心點的y
+        SprintInfo->center_x = (SprintInfo->SpintInfomation->ArrayYellow[etXMin] + SprintInfo->SpintInfomation->ArrayYellow[etXMax]) / 2 ;// +  (SprintInfo->SpintInfomation->ArrayBlue[etXMin] + SprintInfo->SpintInfomation->ArrayBlue[etXMax]) / 2) / 2; //雙色球中心點的x
+        total_size = SprintInfo->SpintInfomation->ArrayYellow[etSize]; //+ SprintInfo->SpintInfomation->ArrayBlue[etSize];
         // YBrat = (double)SprintInfo->SpintInfomation->ArrayBlue[etSize]/(double)SprintInfo->SpintInfomation->ArrayYellow[etSize];
-        YBrat = (double) (SprintInfo->SpintInfomation->ArrayBlue[etXMax]-SprintInfo->SpintInfomation->ArrayBlue[etXMin]) / (SprintInfo->SpintInfomation->ArrayYellow[etXMax] - SprintInfo->SpintInfomation->ArrayYellow[etXMin]);
+        //YBrat = (double) (SprintInfo->SpintInfomation->ArrayBlue[etXMax]-SprintInfo->SpintInfomation->ArrayBlue[etXMin]) / (SprintInfo->SpintInfomation->ArrayYellow[etXMax] - SprintInfo->SpintInfomation->ArrayYellow[etXMin]);
         ROS_INFO(" old totalsize = %d", Old_Toltal_Size);
         ROS_INFO(" now totalsize = %d", total_size);
     }

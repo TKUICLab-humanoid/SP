@@ -627,11 +627,11 @@ void KidsizeStrategy::do_backward_ybrat()
 /****************************************************************************************************/
 void KidsizeStrategy::initparameterpath(void)
 {
-	while(parameter_path == "N")
+	while(tool->parameterPath == "N")
 	{
-		parameter_path = tool->getPackagePath("strategy");
+		tool->parameterPath = tool->getPackagePath("strategy");
 	}
-	printf("parameter_path is %s\n", parameter_path.c_str());
+	printf("tool->parameterPath is %s\n", tool->parameterPath.c_str());
 }
 /****************************************************************************************************/
 void KidsizeStrategy::load_strategy_parameter_ini(void)
@@ -640,7 +640,7 @@ void KidsizeStrategy::load_strategy_parameter_ini(void)
     string sTmp;
     char line[100];
     char path[200];
-    strcpy(path, parameter_path.c_str());														//copy string
+    strcpy(path, tool->parameterPath.c_str());														//copy string
     strcat(path, "/quickchage.ini");												//Connected to path
     fin.open(path, ios::in);
     //fin.open(("/home/iclab/Desktop/SP/src/strategy/Parameter/quickchage.ini"), ios::in);
@@ -711,7 +711,7 @@ void KidsizeStrategy::SaveParameter(const strategy::quickchange &msg)    			//ç½
 {
     ROS_INFO("Enter");
     char path[200];
-    strcpy(path, parameter_path.c_str());
+    strcpy(path, tool->parameterPath.c_str());
     strcat(path, "/quickchage.ini");
     ofstream OutFile(path);
 
@@ -915,7 +915,7 @@ bool KidsizeStrategy::load_strategy_parameter(strategy::Loadquickchange::Request
     ROS_INFO("LoadSP");
     char line[100];
     char path[200];
-    strcpy(path, parameter_path.c_str());														//copy string
+    strcpy(path, tool->parameterPath.c_str());														//copy string
     strcat(path, "/quickchage.ini");												//Connected to path
     fin.open(path, ios::in);
     //fin.open(("/home/iclab/Desktop/SP/src/strategy/Parameter/quickchage.ini"), ios::in);

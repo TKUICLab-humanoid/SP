@@ -32,7 +32,7 @@ void KidsizeStrategy::strategymain()
         printf("\nIMU_right= %1.5f\n",SprintInfo->IMU_right);
         printf("\nIMU_left= %1.5f\n",SprintInfo->IMU_left);
         printf("\n time_flag=%d\n",time_flag);
-	    printf("\n tao=%d\n",tao);
+	    //printf("\n tao=%d\n",tao);
 	    printf("\nsend_x=%d\n",SprintInfo->SpintInfomation->send_x);
         ROS_INFO(" now totalsize = %d", total_size);
 
@@ -413,6 +413,7 @@ bool KidsizeStrategy::head_strategy(void)
             ros_com->sendHeadMotor(HeadMotorID::HorizontalID, SprintInfo->head_motor_x, 1500);			//將馬達x值改為上述head_motor_x值 old_speed:211
             tool->Delay(10);
         }
+        ROS_INFO(" head_angle_x = %d", SprintInfo->head_motor_x);
     }
 }
 /****************************************************************************************************/
@@ -544,7 +545,7 @@ void KidsizeStrategy::do_forward(void)
 		{
 		    do_sprint_forward_part(forward_left_pixel, forward_right_pixel, forward_theta_left_three, forward_theta_right_three);
 		    SprintInfo->SpintInfomation->send_x = max(slowdown_initial_x, SprintInfo->SpintInfomation->send_x - slowdown_300);
-		}
+		}backward_x_add
 		else																		//without watching ball change_mode == 1
 		{
 			SprintInfo->SpintInfomation->tmp_theta = forward_initial_theta;
@@ -644,22 +645,69 @@ void KidsizeStrategy::do_backward_without_watch_ball(int left_turn_value, int ri
 /****************************************************************************************************/
 void KidsizeStrategy::do_backward_ybrat()
 {
-    if(SprintInfo->IMU_now <= SprintInfo->IMU_right)
+    if(total_size >= REDSIZE_200)
+    {
+        if(SprintInfo->head_motor_x == 1844 || SprintInfo->head_motor_x == 2250)
+        {
+            if(SprintInfo->head_motor_x == 1844)
+            {
+                SprintInfo->SpintInfomation->send_theta = backward_initial_theta + backward_theta_left_two;
+                printf("\n1844 danger zone!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                printf("\nturn right,send_theta=%d\n",SprintInfo->SpintInfomation->send_theta);
+                SprintInfo->SpintInfomation->send_x = max(backward_x_max, SprintInfo->SpintInfomation->send_x + backward_x_add);
+            }
+            else
+            {
+                SprintInfo->SpintInfomation->send_theta = backward_initial_theta + backward_theta_right_two;
+                printf("\n2250 danger zone!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                printf("\nturn left,send_theta=%d\n",SprintInfo->SpintInfomation->send_theta);
+                SprintInfo->SpintInfomation->send_x = max(backward_x_max, SprintInfo->SpintInfomation->send_x + backward_x_add);
+            }
+        }
+        else
+        {
+            if(SprintInfo->IMU_now <= SprintInfo->IMU_right)
+            {
+                SprintInfo->SpintInfomation->send_theta = backward_initial_theta + backward_theta_left_three;
+                printf("\nturn backward_theta_left_three=%d\n",backward_theta_left_three);
+                printf("\nturn left,send_theta=%d\n",SprintInfo->SpintInfomation->send_theta);
+                SprintInfo->SpintInfomation->send_x = max(backward_x_max, SprintInfo->SpintInfomation->send_x + backward_x_add);
+            }
+            else if(SprintInfo->IMU_now >= SprintInfo->IMU_left)
+            {
+                SprintInfo->SpintInfomation->send_theta = backward_initial_theta + backward_theta_right_three;
+                printf("\nturn backward_theta_left_three=%d\n",backward_theta_right_three);
+                printf("\nturn right,send_theta=%d\n",SprintInfo->SpintInfomation->send_theta);
+                SprintInfo->SpintInfomation->send_x = max(backward_x_max, SprintInfo->SpintInfomation->send_x + backward_x_add);
+            }
+            else
+            {
+                SprintInfo->SpintInfomation->send_x = max(backward_x_max, SprintInfo->SpintInfomation->send_x + backward_x_add);
+            }
+        }
+    }
+    else
+    {
+        if(SprintInfo->IMU_now <= SprintInfo->IMU_right)
         {
             SprintInfo->SpintInfomation->send_theta = backward_initial_theta + backward_theta_left_three;
+            printf("\nturn backward_theta_left_three=%d\n",backward_theta_left_three);
             printf("\nturn left,send_theta=%d\n",SprintInfo->SpintInfomation->send_theta);
             SprintInfo->SpintInfomation->send_x = max(backward_x_max, SprintInfo->SpintInfomation->send_x + backward_x_add);
         }
-	else if(SprintInfo->IMU_now >= SprintInfo->IMU_left)
+        else if(SprintInfo->IMU_now >= SprintInfo->IMU_left)
         {
             SprintInfo->SpintInfomation->send_theta = backward_initial_theta + backward_theta_right_three;
+            printf("\nturn backward_theta_left_three=%d\n",backward_theta_right_three);
             printf("\nturn right,send_theta=%d\n",SprintInfo->SpintInfomation->send_theta);
             SprintInfo->SpintInfomation->send_x = max(backward_x_max, SprintInfo->SpintInfomation->send_x + backward_x_add);
         }
-    else
+        else
         {
             SprintInfo->SpintInfomation->send_x = max(backward_x_max, SprintInfo->SpintInfomation->send_x + backward_x_add);
         }
+    }
+    
     /*
     ROS_INFO("~~~~~~~~just backward ybrate start~~~~~~~~~");
     if (total_size < REDSIZE_50)

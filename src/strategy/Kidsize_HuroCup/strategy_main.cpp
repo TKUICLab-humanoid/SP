@@ -290,6 +290,8 @@ void KidsizeStrategy::determine_object(void)
 													{
 														if(((strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].YMax-strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].YMin)/(strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].XMax-strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].XMin))>(0.4))//左側(黃)色塊之Y/X 大於0.4(濾除扁形長方體雜訊)
 														{*/
+                                                        if(strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].size<10000)
+                                                        {
 															if(strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].size>tmp_y_size)	//選擇符合條件的物體中最大之目標物
                                                             {
 																SprintInfo->SpintInfomation->ArrayYellow[etXMax] = strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].XMax;
@@ -312,6 +314,7 @@ void KidsizeStrategy::determine_object(void)
 
 																SprintInfo->SpintInfomation->get_target = true; //抓到目標物
 															}
+                                                        }
 														/*}
 													}
 												}

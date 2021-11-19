@@ -35,7 +35,6 @@ void KidsizeStrategy::strategymain()
 	    //printf("\n tao=%d\n",tao);
 	    printf("\nsend_x=%d\n",SprintInfo->SpintInfomation->send_x);
         ROS_INFO(" now totalsize = %d", total_size);
-
         
 		strategy_info->get_image_flag = true;
 		ros_com->drawImageFunction(1, DrawMode::DrawLine, 0, 320, 120, 120, 152, 245, 255);
@@ -287,9 +286,9 @@ void KidsizeStrategy::determine_object(void)
 												if((strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].YMax-strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].YMin)>0&&(strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].YMax-strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].YMin)>0)//Ymax不低於另一側之Ymin
 												{
 													if(((strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].YMax-strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].YMin)/(strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].XMax-strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].XMin))>(0.4))//右側(藍)色塊之Y/X 大於0.4(濾除扁形長方體雜訊)
+													{*/
+													if((1.5)>((strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].YMax-strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].YMin)/(strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].XMax-strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].XMin))>(0.6))//左側(黃)色塊之Y/X 大於0.4(濾除扁形長方體雜訊)
 													{
-														if(((strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].YMax-strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].YMin)/(strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].XMax-strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].XMin))>(0.4))//左側(黃)色塊之Y/X 大於0.4(濾除扁形長方體雜訊)
-														{*/
                                                         if(strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].size<10000)
                                                         {
 															if(strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].size>tmp_y_size)	//選擇符合條件的物體中最大之目標物
@@ -315,8 +314,8 @@ void KidsizeStrategy::determine_object(void)
 																SprintInfo->SpintInfomation->get_target = true; //抓到目標物
 															}
                                                         }
-														/*}
 													}
+													/*}
 												}
 
 											}
@@ -363,7 +362,7 @@ bool KidsizeStrategy::head_strategy(void)
             //ROS_INFO("center_y = %f",SprintInfo->center_y);
             int move_vertical = (SprintInfo->center_y - 100);
             int tmpangle_y = 40.0 * (double)move_vertical / ImageLength;
-            tool->Delay(80);
+            tool->Delay(40);
             //ROS_INFO("move_vertical = %d",move_vertical);
             //ROS_INFO("tmpangle_y = %d",tmpangle_y);
             if (abs(tmpangle_y) > 3)
@@ -401,7 +400,7 @@ bool KidsizeStrategy::head_strategy(void)
                     SprintInfo->head_motor_y = 1100;
                 }
                 SprintInfo->head_motor_x -= 11.378 * tmpangle_x * 0.4;
-                tool->Delay(80);
+                tool->Delay(40);
                 if (SprintInfo->head_motor_x > 2250)								//馬達轉動的界限 2047 + 50*4+3 old:561
                 {
                     SprintInfo->head_motor_x = 2250;

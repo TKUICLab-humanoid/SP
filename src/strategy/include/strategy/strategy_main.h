@@ -93,7 +93,7 @@ public:
 	#define REDSIZE_150 720//600
 	#define REDSIZE_200 1480//1200
 	#define REDSIZE_250 3300//3100
-	#define REDSIZE_300 5000//9100	//without 10000
+	#define REDSIZE_300 2000//9100	//without 10000
 
 	#define REDSIZE_losttarget 2500
 	#define losttarget_ybrate 1

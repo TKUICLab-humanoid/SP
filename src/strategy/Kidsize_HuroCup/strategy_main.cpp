@@ -464,7 +464,7 @@ void KidsizeStrategy::do_sprint_forward_part(int left_pixel, int right_pixel, in
 void KidsizeStrategy::do_forward(void)
 {
     
-    if(total_size > REDSIZE_300)
+    if(total_size >= REDSIZE_300)
     {
         if(SprintInfo->IMU_now <= SprintInfo->IMU_right)
             {

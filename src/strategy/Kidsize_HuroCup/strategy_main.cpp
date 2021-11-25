@@ -287,9 +287,11 @@ void KidsizeStrategy::determine_object(void)
 												{
 													if(((strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].YMax-strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].YMin)/(strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].XMax-strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].XMin))>(0.4))//右側(藍)色塊之Y/X 大於0.4(濾除扁形長方體雜訊)
 													{*/
-													if((1.5)>((strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].YMax-strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].YMin)/(strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].XMax-strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].XMin))>(0.6))//左側(黃)色塊之Y/X 大於0.4(濾除扁形長方體雜訊)
-													{
-                                                        if(strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].size<10000)
+												if(((strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].YMax-strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].YMin)/(strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].XMax-strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].XMin))==(1.0))//左側(黃)色塊之Y/X 大於0.4(濾除扁形長方體雜訊)
+												{
+                                                    if(strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].size<10000)
+                                                    {
+                                                        if(strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].size>1000)
                                                         {
 															if(strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].size>tmp_y_size)	//選擇符合條件的物體中最大之目標物
                                                             {
@@ -297,6 +299,9 @@ void KidsizeStrategy::determine_object(void)
 																SprintInfo->SpintInfomation->ArrayYellow[etXMin] = strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].XMin;
 																SprintInfo->SpintInfomation->ArrayYellow[etYMax] = strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].YMax;
 																SprintInfo->SpintInfomation->ArrayYellow[etYMin] = strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].YMin;
+                                                                ROS_INFO("Y:%d",(strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].YMax-strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].YMin));
+                                                                ROS_INFO("X:%d",(strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].XMax-strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].XMin));
+                                                                
                                                                 /*
 																SprintInfo->SpintInfomation->ArrayBlue[etXMax] = strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].XMax; //攝影機看到的=ImageUnit->ObjectList[(int)LabelModel::Blue]->ObjectInfoList[blue_cnt].XMax
 																SprintInfo->SpintInfomation->ArrayBlue[etXMin] = strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].XMin;
@@ -315,8 +320,8 @@ void KidsizeStrategy::determine_object(void)
 															}
                                                         }
 													}
-													/*}
 												}
+												/*}
 
 											}
 										}
@@ -464,7 +469,7 @@ void KidsizeStrategy::do_sprint_forward_part(int left_pixel, int right_pixel, in
 void KidsizeStrategy::do_forward(void)
 {
     
-    if(total_size >= REDSIZE_300)
+    if(total_size >= without_left)
     {
         if(SprintInfo->IMU_now <= SprintInfo->IMU_right)
             {
@@ -647,7 +652,7 @@ void KidsizeStrategy::do_backward_without_watch_ball(int left_turn_value, int ri
 /****************************************************************************************************/
 void KidsizeStrategy::do_backward_ybrat()
 {
-    if(total_size >= REDSIZE_200)
+    if(total_size >= without_right)
     {
         if(SprintInfo->head_motor_x == 1844 || SprintInfo->head_motor_x == 2250)
         {

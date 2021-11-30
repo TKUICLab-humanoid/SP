@@ -485,6 +485,7 @@ void KidsizeStrategy::do_forward(void)
             }
         else
             {
+                SprintInfo->SpintInfomation->send_theta = forward_initial_theta;
                 SprintInfo->SpintInfomation->send_x = max(slowdown_initial_x, SprintInfo->SpintInfomation->send_x - slowdown_300);
             }
     }
@@ -504,6 +505,7 @@ void KidsizeStrategy::do_forward(void)
             }
         else
             {
+                SprintInfo->SpintInfomation->send_theta = forward_initial_theta;
                 SprintInfo->SpintInfomation->send_x = min(forward_x_max, SprintInfo->SpintInfomation->send_x + forward_x_add);
             }   
     }
@@ -689,6 +691,7 @@ void KidsizeStrategy::do_backward_ybrat()
             }
             else
             {
+                SprintInfo->SpintInfomation->send_theta = backward_initial_theta;
                 SprintInfo->SpintInfomation->send_x = max(backward_x_max, SprintInfo->SpintInfomation->send_x + backward_x_add);
             }
         }
@@ -711,6 +714,7 @@ void KidsizeStrategy::do_backward_ybrat()
         }
         else
         {
+            SprintInfo->SpintInfomation->send_theta = backward_initial_theta;
             SprintInfo->SpintInfomation->send_x = max(backward_x_max, SprintInfo->SpintInfomation->send_x + backward_x_add);
         }
     }

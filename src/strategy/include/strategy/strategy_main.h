@@ -91,9 +91,9 @@ public:
 	#define REDSIZE_50 300//220
 	#define REDSIZE_100 440//350
 	#define REDSIZE_150 720//600
-	#define REDSIZE_200 1480//1200
+	#define REDSIZE_200 5000//1200
 	#define REDSIZE_250 3300//3100
-	#define REDSIZE_300 9100//9100	//without 10000
+	#define REDSIZE_300 5000//9100	//without 10000
 
 	#define REDSIZE_losttarget 2500
 	#define losttarget_ybrate 1
@@ -155,16 +155,7 @@ public:
 	int aruco_headangle;
 	int aruco_headangle_limit;
 	int aruco_distence_check;
-<<<<<<< HEAD
-<<<<<<< HEAD
-	#define aruco_back_distence 720
-	#define ARUCODISTENCE_50  4800
-	#define ARUCODISTENCE_100 4000
-	#define ARUCODISTENCE_150 3200
-	#define ARUCODISTENCE_200 2500
-	#define ARUCODISTENCE_250 1000
-	#define ARUCODISTENCE_300 865
-=======
+
 	#define aruco_back_distence 695
 	#define ARUCODISTENCE_50 3115
 	#define ARUCODISTENCE_100 2250
@@ -172,17 +163,7 @@ public:
 	#define ARUCODISTENCE_200 1200
 	#define ARUCODISTENCE_250 900
 	#define ARUCODISTENCE_300 800
->>>>>>> 689a1f623280e58d3295dd264f4d24a5b51248e8
-=======
 
-	#define aruco_back_distence 815
-	#define ARUCODISTENCE_50  5000
-	#define ARUCODISTENCE_100 4000
-	#define ARUCODISTENCE_150 3000
-	#define ARUCODISTENCE_200 2500
-	#define ARUCODISTENCE_250 1100
-	#define ARUCODISTENCE_300 900
->>>>>>> updatebranch
 	#define ARUCO_MIDLE_LINE_0 130 //no use
 	#define ARUCO_MIDLE_LINE_50 220
 	#define ARUCO_MIDLE_LINE_100 180

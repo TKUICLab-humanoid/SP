@@ -32,9 +32,9 @@ void KidsizeStrategy::strategymain()
         printf("\nIMU_right= %1.5f\n",SprintInfo->IMU_right);
         printf("\nIMU_left= %1.5f\n",SprintInfo->IMU_left);
         printf("\n time_flag=%d\n",time_flag);
-	printf("\n tao=%d\n",tao);
-	printf("\nsend_x=%d\n",SprintInfo->SpintInfomation->send_x);
-
+	    //printf("\n tao=%d\n",tao);
+	    printf("\nsend_x=%d\n",SprintInfo->SpintInfomation->send_x);
+        ROS_INFO(" now totalsize = %d", total_size);
         
 		strategy_info->get_image_flag = true;
 		ros_com->drawImageFunction(1, DrawMode::DrawLine, 0, 320, 120, 120, 152, 245, 255);
@@ -45,14 +45,14 @@ void KidsizeStrategy::strategymain()
 		once_flag = true;
         if(change_mode != 2)
         {
-		    strategy_info->get_image_flag = true;
-		    strategy_info->get_label_model_flag = true;
+		    //strategy_info->get_image_flag = true;
+		    //strategy_info->get_label_model_flag = true;
 		    classify_strategy();										    // process image
 		    head_strategy();
         }
 		if (first_in == true)											//only once
 		{
-            ros_com->sendSensorSet(0,6,0,0,0,0,0);
+            // ros_com->sendSensorSet(0,6,0,0);
             SprintInfo->IMU_start = SprintInfo->IMU_now;
             SprintInfo->IMU_right = SprintInfo->IMU_start - 3;                                   
             SprintInfo->IMU_left  = SprintInfo->IMU_start + 3;
@@ -75,10 +75,12 @@ void KidsizeStrategy::strategymain()
         {
 		    SprintInfo->fram_count++;
 		    if(SprintInfo->SpintInfomation->SprForWard) SprintInfo->fram_count++;
-		    if (SprintInfo->SpintInfomation->get_target || (change_mode == 1 && SprintInfo->SpintInfomation->SprForWard == 0))//if mode==1 and back it will be true
-		    {
-		    	if (SprintInfo->SpintInfomation->SprForWard) //是否前進中
-		    	{
+		    //if (SprintInfo->SpintInfomation->get_target || (change_mode == 1 && SprintInfo->SpintInfomation->SprForWard == 0))//if mode==1 and back it will be true
+		    //{
+            if (SprintInfo->SpintInfomation->get_target)
+            {
+		        if (SprintInfo->SpintInfomation->SprForWard) //是否前進中
+		        {
 		    		do_forward();
 		    		if (total_size > back_total_size) //判斷是否後退走
 		    		{
@@ -98,9 +100,11 @@ void KidsizeStrategy::strategymain()
 		    			SprintInfo->SpintInfomation->send_theta = backward_initial_theta;
 		    			SprintInfo->SpintInfomation->send_x = backward_initial_x; //步態X軸參數
 		    		}
-		    	}
-		    	else
-		    	{
+		        }
+		        else
+		        {
+                    do_backward_ybrat();
+                    /*
 		    		ROS_INFO("Do Backward!!!!!!");
 		    		if(change_mode == 1) 
 		    		{	
@@ -135,10 +139,23 @@ void KidsizeStrategy::strategymain()
 		    		{
 		    			do_backward_ybrat();
 		    		}
-		    	}
-		    }
-		    else   //沒抓到目標
-		    {
+                    */
+		        }
+            }
+            else
+            {
+                if (SprintInfo->SpintInfomation->SprForWard)
+                {
+                    do_forward();
+                }
+                else
+                {
+                    do_backward_ybrat();
+                }
+            }
+		    //}
+		    //else   //沒抓到目標
+		    /*{
 		    	ROS_INFO("lost target!\n");
 		    	if (SprintInfo->SpintInfomation->SprForWard)              //forward flag
 		    	{
@@ -200,11 +217,11 @@ void KidsizeStrategy::strategymain()
 		    	}
 		    	check_headerror = true;
 		    	SprintInfo->fram_count = 0;
-		    }
-		    ROS_INFO("send_theta = %d", SprintInfo->SpintInfomation->send_theta);
-		    ROS_INFO("speed = %4d", SprintInfo->SpintInfomation->send_x);
-		    ROS_INFO("YBrat = %1.5f", YBrat);
-		    ROS_INFO("center_x = %f\n",SprintInfo->center_x);
+		    }*/
+		    //ROS_INFO("send_theta = %d", SprintInfo->SpintInfomation->send_theta);
+		    //ROS_INFO("speed = %4d", SprintInfo->SpintInfomation->send_x);
+		    //ROS_INFO("YBrat = %1.5f", YBrat);
+		    //ROS_INFO("center_x = %f\n",SprintInfo->center_x);
             if (SprintInfo->SpintInfomation->SprForWard)
 		    	{
 		            ros_com->sendContinuousValue(SprintInfo->SpintInfomation->send_x, SprintInfo->SpintInfomation->send_y, 0, SprintInfo->SpintInfomation->send_theta,SensorMode::RollPitch);//imu:SensorMode::RollPitch
@@ -248,7 +265,7 @@ void KidsizeStrategy::determine_object(void)
     for (yellow_cnt = 0; yellow_cnt < strategy_info->color_mask_subject_cnts[(int)LabelModel::Yellow]; yellow_cnt++) //黃色數量
     {
         //ROS_INFO("Yc = %d",strategy_info->color_mask_subject_cnts[(int)LabelModel::Yellow]);
-        for (blue_cnt = 0; blue_cnt < strategy_info->color_mask_subject_cnts[(int)LabelModel::Blue]; blue_cnt++) //藍色數量
+        /*for (blue_cnt = 0; blue_cnt < strategy_info->color_mask_subject_cnts[(int)LabelModel::Blue]; blue_cnt++) //藍色數量
         {
 				if (strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].XMax < strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].XMax) //Blue右邊界一定在Yellow之右
 				{
@@ -269,34 +286,42 @@ void KidsizeStrategy::determine_object(void)
 												if((strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].YMax-strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].YMin)>0&&(strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].YMax-strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].YMin)>0)//Ymax不低於另一側之Ymin
 												{
 													if(((strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].YMax-strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].YMin)/(strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].XMax-strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].XMin))>(0.4))//右側(藍)色塊之Y/X 大於0.4(濾除扁形長方體雜訊)
-													{
-														if(((strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].YMax-strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].YMin)/(strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].XMax-strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].XMin))>(0.4))//左側(黃)色塊之Y/X 大於0.4(濾除扁形長方體雜訊)
-														{
-															if((strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].size>tmp_b_size)&&(strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].size>tmp_y_size)){	//選擇符合條件的物體中最大之目標物
-														
+													{*/
+												if(((strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].YMax-strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].YMin)/(strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].XMax-strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].XMin))==(1.0))//左側(黃)色塊之Y/X 大於0.4(濾除扁形長方體雜訊)
+												{
+                                                    if(strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].size<10000)
+                                                    {
+                                                        if(strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].size>1000)
+                                                        {
+															if(strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].size>tmp_y_size)	//選擇符合條件的物體中最大之目標物
+                                                            {
 																SprintInfo->SpintInfomation->ArrayYellow[etXMax] = strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].XMax;
 																SprintInfo->SpintInfomation->ArrayYellow[etXMin] = strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].XMin;
 																SprintInfo->SpintInfomation->ArrayYellow[etYMax] = strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].YMax;
 																SprintInfo->SpintInfomation->ArrayYellow[etYMin] = strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].YMin;
-
+                                                                ROS_INFO("Y:%d",(strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].YMax-strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].YMin));
+                                                                ROS_INFO("X:%d",(strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].XMax-strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].XMin));
+                                                                
+                                                                /*
 																SprintInfo->SpintInfomation->ArrayBlue[etXMax] = strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].XMax; //攝影機看到的=ImageUnit->ObjectList[(int)LabelModel::Blue]->ObjectInfoList[blue_cnt].XMax
 																SprintInfo->SpintInfomation->ArrayBlue[etXMin] = strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].XMin;
 																SprintInfo->SpintInfomation->ArrayBlue[etYMax] = strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].YMax;
 																SprintInfo->SpintInfomation->ArrayBlue[etYMin] = strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].YMin;
-
+                                                                */
 																SprintInfo->SpintInfomation->ArrayYellow[etSize] = strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].size;
-																SprintInfo->SpintInfomation->ArrayBlue[etSize] = strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].size;//record y and b size to compare next
+																//SprintInfo->SpintInfomation->ArrayBlue[etSize] = strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].size;//record y and b size to compare next
 																tmp_y_size=strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].size;
-																tmp_b_size=strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].size;
+																//tmp_b_size=strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].size;
 
 																ros_com->drawImageFunction(1, DrawMode::DrawObject, strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].XMin, strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].XMax, strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].YMin, strategy_info->color_mask_subject[(int)LabelModel::Yellow][yellow_cnt].YMax, 255, 255, 0);
-																ros_com->drawImageFunction(2, DrawMode::DrawObject, strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].XMin, strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].XMax, strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].YMin, strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].YMax, 255, 255, 0);
+																//ros_com->drawImageFunction(2, DrawMode::DrawObject, strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].XMin, strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].XMax, strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].YMin, strategy_info->color_mask_subject[(int)LabelModel::Blue][blue_cnt].YMax, 255, 255, 0);
 
 																SprintInfo->SpintInfomation->get_target = true; //抓到目標物
 															}
-														}
+                                                        }
 													}
 												}
+												/*}
 
 											}
 										}
@@ -306,7 +331,7 @@ void KidsizeStrategy::determine_object(void)
 						}
 					}
 				}
-        }
+        }*/
     }
 tmp_y_size=0;
 tmp_b_size=0;
@@ -321,12 +346,13 @@ void KidsizeStrategy::classify_strategy(void)
 
     if (SprintInfo->SpintInfomation->get_target)
     {
-        SprintInfo->center_y = ((SprintInfo->SpintInfomation->ArrayBlue[etYMin] + SprintInfo->SpintInfomation->ArrayBlue[etYMax]) / 2 +  (SprintInfo->SpintInfomation->ArrayYellow[etYMin] + SprintInfo->SpintInfomation->ArrayYellow[etYMax]) / 2) / 2; //雙色球中心點的y
-        SprintInfo->center_x = ((SprintInfo->SpintInfomation->ArrayBlue[etXMin] + SprintInfo->SpintInfomation->ArrayBlue[etXMax]) / 2 +  (SprintInfo->SpintInfomation->ArrayYellow[etXMin] + SprintInfo->SpintInfomation->ArrayYellow[etXMax]) / 2) / 2; //雙色球中心點的x
-
-        total_size = SprintInfo->SpintInfomation->ArrayYellow[etSize] + SprintInfo->SpintInfomation->ArrayBlue[etSize];
+        //SprintInfo->center_y = ((SprintInfo->SpintInfomation->ArrayBlue[etYMin] + SprintInfo->SpintInfomation->ArrayBlue[etYMax]) / 2 +  (SprintInfo->SpintInfomation->ArrayYellow[etYMin] + SprintInfo->SpintInfomation->ArrayYellow[etYMax]) / 2) / 2; //雙色球中心點的y
+        //SprintInfo->center_x = ((SprintInfo->SpintInfomation->ArrayBlue[etXMin] + SprintInfo->SpintInfomation->ArrayBlue[etXMax]) / 2 +  (SprintInfo->SpintInfomation->ArrayYellow[etXMin] + SprintInfo->SpintInfomation->ArrayYellow[etXMax]) / 2) / 2; //雙色球中心點的x
+        SprintInfo->center_y = (SprintInfo->SpintInfomation->ArrayYellow[etYMin] + SprintInfo->SpintInfomation->ArrayYellow[etYMax]) / 2 ;//+  (SprintInfo->SpintInfomation->ArrayBlue[etYMin] + SprintInfo->SpintInfomation->ArrayBlue[etYMax]) / 2) / 2; //雙色球中心點的y
+        SprintInfo->center_x = (SprintInfo->SpintInfomation->ArrayYellow[etXMin] + SprintInfo->SpintInfomation->ArrayYellow[etXMax]) / 2 ;// +  (SprintInfo->SpintInfomation->ArrayBlue[etXMin] + SprintInfo->SpintInfomation->ArrayBlue[etXMax]) / 2) / 2; //雙色球中心點的x
+        total_size = SprintInfo->SpintInfomation->ArrayYellow[etSize]; //+ SprintInfo->SpintInfomation->ArrayBlue[etSize];
         // YBrat = (double)SprintInfo->SpintInfomation->ArrayBlue[etSize]/(double)SprintInfo->SpintInfomation->ArrayYellow[etSize];
-        YBrat = (double) (SprintInfo->SpintInfomation->ArrayBlue[etXMax]-SprintInfo->SpintInfomation->ArrayBlue[etXMin]) / (SprintInfo->SpintInfomation->ArrayYellow[etXMax] - SprintInfo->SpintInfomation->ArrayYellow[etXMin]);
+        //YBrat = (double) (SprintInfo->SpintInfomation->ArrayBlue[etXMax]-SprintInfo->SpintInfomation->ArrayBlue[etXMin]) / (SprintInfo->SpintInfomation->ArrayYellow[etXMax] - SprintInfo->SpintInfomation->ArrayYellow[etXMin]);
         ROS_INFO(" old totalsize = %d", Old_Toltal_Size);
         ROS_INFO(" now totalsize = %d", total_size);
     }
@@ -341,7 +367,7 @@ bool KidsizeStrategy::head_strategy(void)
             //ROS_INFO("center_y = %f",SprintInfo->center_y);
             int move_vertical = (SprintInfo->center_y - 100);
             int tmpangle_y = 40.0 * (double)move_vertical / ImageLength;
-            tool->Delay(80);
+            tool->Delay(40);
             //ROS_INFO("move_vertical = %d",move_vertical);
             //ROS_INFO("tmpangle_y = %d",tmpangle_y);
             if (abs(tmpangle_y) > 3)
@@ -379,7 +405,7 @@ bool KidsizeStrategy::head_strategy(void)
                     SprintInfo->head_motor_y = 1100;
                 }
                 SprintInfo->head_motor_x -= 11.378 * tmpangle_x * 0.4;
-                tool->Delay(80);
+                tool->Delay(40);
                 if (SprintInfo->head_motor_x > 2250)								//馬達轉動的界限 2047 + 50*4+3 old:561
                 {
                     SprintInfo->head_motor_x = 2250;
@@ -394,6 +420,7 @@ bool KidsizeStrategy::head_strategy(void)
             ros_com->sendHeadMotor(HeadMotorID::HorizontalID, SprintInfo->head_motor_x, 1500);			//將馬達x值改為上述head_motor_x值 old_speed:211
             tool->Delay(10);
         }
+        ROS_INFO(" head_angle_x = %d", SprintInfo->head_motor_x);
     }
 }
 /****************************************************************************************************/
@@ -441,6 +468,48 @@ void KidsizeStrategy::do_sprint_forward_part(int left_pixel, int right_pixel, in
 /****************************************************************************************************/
 void KidsizeStrategy::do_forward(void)
 {
+    
+    if(total_size >= without_left)
+    {
+        if(SprintInfo->IMU_now <= SprintInfo->IMU_right)
+            {
+                SprintInfo->SpintInfomation->send_theta = forward_initial_theta + forward_theta_left_three;
+                printf("\nturn left,send_theta=%d\n",SprintInfo->SpintInfomation->send_theta);
+                SprintInfo->SpintInfomation->send_x = max(slowdown_initial_x, SprintInfo->SpintInfomation->send_x - slowdown_300);
+            }
+        else if(SprintInfo->IMU_now >= SprintInfo->IMU_left)
+            {
+                SprintInfo->SpintInfomation->send_theta = forward_initial_theta + forward_theta_right_three;
+                printf("\nturn right,send_theta=%d\n",SprintInfo->SpintInfomation->send_theta);
+                SprintInfo->SpintInfomation->send_x = max(slowdown_initial_x, SprintInfo->SpintInfomation->send_x - slowdown_300);
+            }
+        else
+            {
+                SprintInfo->SpintInfomation->send_theta = forward_initial_theta;
+                SprintInfo->SpintInfomation->send_x = max(slowdown_initial_x, SprintInfo->SpintInfomation->send_x - slowdown_300);
+            }
+    }
+    else
+    {
+        if(SprintInfo->IMU_now <= SprintInfo->IMU_right)
+            {
+                SprintInfo->SpintInfomation->send_theta = forward_initial_theta + forward_theta_left_three;
+                printf("\nturn left,send_theta=%d\n",SprintInfo->SpintInfomation->send_theta);
+                SprintInfo->SpintInfomation->send_x = min(forward_x_max, SprintInfo->SpintInfomation->send_x + forward_x_add);
+            }
+        else if(SprintInfo->IMU_now >= SprintInfo->IMU_left)
+            {
+                SprintInfo->SpintInfomation->send_theta = forward_initial_theta + forward_theta_right_three;
+                printf("\nturn right,send_theta=%d\n",SprintInfo->SpintInfomation->send_theta);
+                SprintInfo->SpintInfomation->send_x = min(forward_x_max, SprintInfo->SpintInfomation->send_x + forward_x_add);
+            }
+        else
+            {
+                SprintInfo->SpintInfomation->send_theta = forward_initial_theta;
+                SprintInfo->SpintInfomation->send_x = min(forward_x_max, SprintInfo->SpintInfomation->send_x + forward_x_add);
+            }   
+    }
+    /*
     ROS_INFO("~~~~~~do_forward information start~~~~~~");
     if (total_size < REDSIZE_50)
     {
@@ -485,7 +554,7 @@ void KidsizeStrategy::do_forward(void)
 		{
 		    do_sprint_forward_part(forward_left_pixel, forward_right_pixel, forward_theta_left_three, forward_theta_right_three);
 		    SprintInfo->SpintInfomation->send_x = max(slowdown_initial_x, SprintInfo->SpintInfomation->send_x - slowdown_300);
-		}
+		}backward_x_add
 		else																		//without watching ball change_mode == 1
 		{
 			SprintInfo->SpintInfomation->tmp_theta = forward_initial_theta;
@@ -493,6 +562,7 @@ void KidsizeStrategy::do_forward(void)
 		}
     }
     ROS_INFO("~~~~~~do_forward information end~~~~~~");
+    */
 }
 /****************************************************************************************************/
 void KidsizeStrategy::do_sprint_backward_part_yb(double left_dis, double right_dis, int left_turn_value, int right_turn_value)
@@ -584,6 +654,72 @@ void KidsizeStrategy::do_backward_without_watch_ball(int left_turn_value, int ri
 /****************************************************************************************************/
 void KidsizeStrategy::do_backward_ybrat()
 {
+    if(total_size >= without_right)
+    {
+        if(SprintInfo->head_motor_x == 1844 || SprintInfo->head_motor_x == 2250)
+        {
+            if(SprintInfo->head_motor_x == 1844)
+            {
+                SprintInfo->SpintInfomation->send_theta = backward_initial_theta + backward_theta_left_two;
+                printf("\n1844 danger zone!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                printf("\nturn right,send_theta=%d\n",SprintInfo->SpintInfomation->send_theta);
+                SprintInfo->SpintInfomation->send_x = max(backward_x_max, SprintInfo->SpintInfomation->send_x + backward_x_add);
+            }
+            else
+            {
+                SprintInfo->SpintInfomation->send_theta = backward_initial_theta + backward_theta_right_two;
+                printf("\n2250 danger zone!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                printf("\nturn left,send_theta=%d\n",SprintInfo->SpintInfomation->send_theta);
+                SprintInfo->SpintInfomation->send_x = max(backward_x_max, SprintInfo->SpintInfomation->send_x + backward_x_add);
+            }
+        }
+        else
+        {
+            if(SprintInfo->IMU_now <= SprintInfo->IMU_right)
+            {
+                SprintInfo->SpintInfomation->send_theta = backward_initial_theta + backward_theta_left_three;
+                printf("\nturn backward_theta_left_three=%d\n",backward_theta_left_three);
+                printf("\nturn left,send_theta=%d\n",SprintInfo->SpintInfomation->send_theta);
+                SprintInfo->SpintInfomation->send_x = max(backward_x_max, SprintInfo->SpintInfomation->send_x + backward_x_add);
+            }
+            else if(SprintInfo->IMU_now >= SprintInfo->IMU_left)
+            {
+                SprintInfo->SpintInfomation->send_theta = backward_initial_theta + backward_theta_right_three;
+                printf("\nturn backward_theta_left_three=%d\n",backward_theta_right_three);
+                printf("\nturn right,send_theta=%d\n",SprintInfo->SpintInfomation->send_theta);
+                SprintInfo->SpintInfomation->send_x = max(backward_x_max, SprintInfo->SpintInfomation->send_x + backward_x_add);
+            }
+            else
+            {
+                SprintInfo->SpintInfomation->send_theta = backward_initial_theta;
+                SprintInfo->SpintInfomation->send_x = max(backward_x_max, SprintInfo->SpintInfomation->send_x + backward_x_add);
+            }
+        }
+    }
+    else
+    {
+        if(SprintInfo->IMU_now <= SprintInfo->IMU_right)
+        {
+            SprintInfo->SpintInfomation->send_theta = backward_initial_theta + backward_theta_left_three;
+            printf("\nturn backward_theta_left_three=%d\n",backward_theta_left_three);
+            printf("\nturn left,send_theta=%d\n",SprintInfo->SpintInfomation->send_theta);
+            SprintInfo->SpintInfomation->send_x = max(backward_x_max, SprintInfo->SpintInfomation->send_x + backward_x_add);
+        }
+        else if(SprintInfo->IMU_now >= SprintInfo->IMU_left)
+        {
+            SprintInfo->SpintInfomation->send_theta = backward_initial_theta + backward_theta_right_three;
+            printf("\nturn backward_theta_left_three=%d\n",backward_theta_right_three);
+            printf("\nturn right,send_theta=%d\n",SprintInfo->SpintInfomation->send_theta);
+            SprintInfo->SpintInfomation->send_x = max(backward_x_max, SprintInfo->SpintInfomation->send_x + backward_x_add);
+        }
+        else
+        {
+            SprintInfo->SpintInfomation->send_theta = backward_initial_theta;
+            SprintInfo->SpintInfomation->send_x = max(backward_x_max, SprintInfo->SpintInfomation->send_x + backward_x_add);
+        }
+    }
+    
+    /*
     ROS_INFO("~~~~~~~~just backward ybrate start~~~~~~~~~");
     if (total_size < REDSIZE_50)
     {
@@ -623,15 +759,16 @@ void KidsizeStrategy::do_backward_ybrat()
     }
 	SprintInfo->SpintInfomation->send_x = max(backward_x_max, SprintInfo->SpintInfomation->send_x + backward_x_add);	//backward speed limit
     ROS_INFO("~~~~~~~~just backward ybrate end~~~~~~~~~");
+    */
 }
 /****************************************************************************************************/
 void KidsizeStrategy::initparameterpath(void)
 {
-	while(parameter_path == "N")
+	while(tool->parameterPath == "N")
 	{
-		parameter_path = tool->getPackagePath("strategy");
+		tool->parameterPath = tool->getPackagePath("strategy");
 	}
-	printf("parameter_path is %s\n", parameter_path.c_str());
+	printf("tool->parameterPath is %s\n", tool->parameterPath.c_str());
 }
 /****************************************************************************************************/
 void KidsizeStrategy::load_strategy_parameter_ini(void)
@@ -640,7 +777,7 @@ void KidsizeStrategy::load_strategy_parameter_ini(void)
     string sTmp;
     char line[100];
     char path[200];
-    strcpy(path, parameter_path.c_str());														//copy string
+    strcpy(path, tool->parameterPath.c_str());														//copy string
     strcat(path, "/quickchage.ini");												//Connected to path
     fin.open(path, ios::in);
     //fin.open(("/home/iclab/Desktop/SP/src/strategy/Parameter/quickchage.ini"), ios::in);
@@ -711,7 +848,7 @@ void KidsizeStrategy::SaveParameter(const strategy::quickchange &msg)    			//�
 {
     ROS_INFO("Enter");
     char path[200];
-    strcpy(path, parameter_path.c_str());
+    strcpy(path, tool->parameterPath.c_str());
     strcat(path, "/quickchage.ini");
     ofstream OutFile(path);
 
@@ -915,7 +1052,7 @@ bool KidsizeStrategy::load_strategy_parameter(strategy::Loadquickchange::Request
     ROS_INFO("LoadSP");
     char line[100];
     char path[200];
-    strcpy(path, parameter_path.c_str());														//copy string
+    strcpy(path, tool->parameterPath.c_str());														//copy string
     strcat(path, "/quickchage.ini");												//Connected to path
     fin.open(path, ios::in);
     //fin.open(("/home/iclab/Desktop/SP/src/strategy/Parameter/quickchage.ini"), ios::in);

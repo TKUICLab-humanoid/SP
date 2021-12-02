@@ -52,7 +52,7 @@ void KidsizeStrategy::strategymain()
         }
 		if (first_in == true)											//only once
 		{
-            ros_com->sendSensorSet(0,6,0,0,0,0,0);
+            // ros_com->sendSensorSet(0,6,0,0);
             SprintInfo->IMU_start = SprintInfo->IMU_now;
             SprintInfo->IMU_right = SprintInfo->IMU_start - 3;                                   
             SprintInfo->IMU_left  = SprintInfo->IMU_start + 3;

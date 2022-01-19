@@ -1,0 +1,12 @@
+float64 IK_Point_RX
+float64 IK_Point_RY
+float64 IK_Point_RZ
+float64 IK_Point_RThta
+float64 IK_Point_LX
+float64 IK_Point_LY
+float64 IK_Point_LZ 
+float64 IK_Point_LThta
+int32 Period_T
+int32 Sampletime
+int32 Walking_State
+int32 Sensor_Mode

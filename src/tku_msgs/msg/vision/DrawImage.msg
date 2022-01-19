@@ -1,0 +1,9 @@
+int16 cnt
+int16 Mode
+int16 XMin
+int16 XMax
+int16 YMin
+int16 YMax
+int32 rValue
+int32 gValue
+int32 bValue

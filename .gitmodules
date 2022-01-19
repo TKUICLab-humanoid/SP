@@ -1,0 +1,21 @@
+[submodule "interface"]
+	path = interface
+	url = https://github.com/TKUICLab-humanoid/hurocup_interface_submodule.git
+[submodule "imageprocess"]
+	path = imageprocess
+	url = https://github.com/TKUICLab-humanoid/imageprocess_submodule.git
+[submodule "package"]
+	path = package
+	url = https://github.com/TKUICLab-humanoid/motionpackage_submodule.git
+[submodule "tku_libs"]
+	path = tku_libs
+	url = https://github.com/TKUICLab-humanoid/tku_libs_submodule.git
+[submodule "tku_msgs"]
+	path = tku_msgs
+	url = https://github.com/TKUICLab-humanoid/tku_msgs_submodule.git
+[submodule "usb_cam"]
+	path = usb_cam
+	url = https://github.com/TKUICLab-humanoid/usb_cam_submodule.git
+[submodule "walkinggait"]
+	path = walkinggait
+	url = https://github.com/TKUICLab-humanoid/walkinggait_submodule.git

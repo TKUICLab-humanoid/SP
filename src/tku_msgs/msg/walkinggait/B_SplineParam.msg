@@ -1,0 +1,8 @@
+float32 Kick_Point_X
+float32 Kick_Point_Y
+float32 Kick_Point_Z
+float32 Back_Point_X
+float32 Back_Point_Z
+float32 Support_Foot_Hip_Upper_Pitch
+float32 Kick_Foot_Ankle_Upper_Pitch
+float32 Support_Foot_Ankle_Upper_Pitch

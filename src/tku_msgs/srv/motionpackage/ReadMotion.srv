@@ -1,0 +1,10 @@
+bool read
+string name
+int16 readstate
+---
+int16 VectorCnt
+int16[] motionstate
+int16[] ID
+int16[] MotionList
+int16[] RelativeData
+int16[] AbsoluteData

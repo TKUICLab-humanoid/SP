@@ -1,0 +1,105 @@
+#container
+{
+    width: 1010px;
+    height: 800px;
+    float: left; 
+}
+.topbox
+{
+    width: 770px;
+    height: 30px; 
+    float: top;
+}
+#leftbox
+{
+    width: 40px;
+    height: 100px; 
+    float: left;
+    margin-top: 30px; 
+    margin-left: 10px;
+}
+#CheckSumBox
+{
+    overflow-y: scroll;
+    overflow-x: hidden;
+    width: 120px;
+    height: 200px; 
+    border:5px #888888 groove;
+    background-color: #AAAAAA; 
+    float: button;
+}
+#label
+{
+    width: 1010px;
+    height: 30px;
+    margin-left: 0px;
+}
+.box
+{
+    background-color: #AAAAAA;
+    width: 670px;
+    height: 300px;
+    border:5px #000000 groove;
+    margin-top:5px;
+    margin-bottom:5px;
+    margin-left:20px; 
+    float: left;
+}
+.smallbox
+{
+    background-color: #AAAAAA;
+    width: 1150px;
+    height: 20px;  
+    float: left;
+}
+.inthesmallbox
+{
+    width: 48px;
+    height: 20px;
+    border: 1px #111 solid;
+    float: left;
+}
+
+.checksumsmallbox
+{
+    width: 100px;
+    height: 20px;
+    border: 1px #111 solid;
+    float: left;
+}
+
+#MotionTable
+{
+    width: 2100px;
+    float: left;
+}
+.textbox
+{
+    background-color: #ddd;
+    width: 46px; 
+    float: left;
+}
+#robotpic
+{
+    float: left;
+    width: 300px;
+    margin-left: 0px;
+    margin-top: 50px;
+}
+#version
+{
+    float: left;
+    width: auto;
+    margin-left: 0px;
+    margin-top: 0px;
+    text-align:right;
+}
+.blue
+{
+    color: blue;
+}
+body{
+    width:3000px;
+    margin-right: 0px;
+    margin-left: 0px;
+}

@@ -1,0 +1,14 @@
+int32 mode
+---
+float32 X_Swing_Range
+float32 Y_Swing_Range
+float32 Z_Swing_Range
+int32 Period_T
+int32 Period_T2
+int32 Sample_Time
+float32 OSC_LockRange
+float32 BASE_Default_Z
+float32 Y_Swing_Shift
+float32 X_Swing_COM
+float32 BASE_LIFT_Z
+B_SplineParam B_SplineParam

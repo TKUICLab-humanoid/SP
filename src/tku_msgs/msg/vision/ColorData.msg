@@ -1,0 +1,9 @@
+int32 X
+int32 Y
+int32 XMin
+int32 XMax
+int32 YMin
+int32 YMax
+int32 Width
+int32 Height
+int32 size                                                 

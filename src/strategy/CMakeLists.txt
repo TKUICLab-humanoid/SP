@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
 	message_generation
 	roscpp
 	roslib
+	rospy
 	sensor_msgs
 	std_msgs
 	tku_msgs

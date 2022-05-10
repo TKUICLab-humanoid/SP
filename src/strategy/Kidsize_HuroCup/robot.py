@@ -104,7 +104,7 @@ def backspeed():
   global bspeed
   bspeed-=200
   time.sleep(0.1)
-  bspeed=max(-5800,bspeed)
+  bspeed=max(-3000,bspeed)
   print("backspeeed:",bspeed)
   return bspeed
 

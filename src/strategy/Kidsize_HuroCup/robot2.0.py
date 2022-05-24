@@ -45,13 +45,13 @@ def yaw_backward(bx):
     if(bx)>yaw_hold+3:
       print("turn left")
       print(bx)
-      theta=-6
+      theta=-4
     elif(bx)<yaw_hold-3:
       print("turn right")
       print(bx)
       theta=4
     else:
-      theta=-2
+      theta=1
     tt=theta#+theta3
     print("total change:", tt) 
     return tt 
@@ -138,10 +138,10 @@ def fspeed():
   global color1
   global slowspd
   global speed
-  if color1<4000:
+  if color1<5000:
     firstspd+=200
     time.sleep(0.08)
-    speed=min(5000,firstspd)
+    speed=min(7000,firstspd)
   else:#slow speed
     speed-=300
     time.sleep(0.06)
@@ -151,9 +151,9 @@ def fspeed():
   
 def backspeed():
   global bspeed
-  bspeed-=200
+  bspeed-=100
   time.sleep(0.05)
-  bspeed=max(-4000,bspeed)
+  bspeed=max(-4900,bspeed)
   print("backspeeed:",bspeed)
   return bspeed
 
@@ -267,7 +267,7 @@ if __name__ == '__main__':
             elif x==None and y==None:
               x=500
               y=500   
-              print("bad bad bad bad bad") 
+              print("nothing nothing nothing nothing!!!!!!!!!!!!!!!!!!!!") 
             """print(objxmaxblue)
             print(objxminblue)
             print(objymaxblue)
@@ -291,7 +291,7 @@ if __name__ == '__main__':
                 print("ball ball ball",color1)
                 print("move on move on move on")
                 
-            if color1>10000 or ss==1:
+            if color1>7850 or ss==1:
               thetachange2=yaw_backward(yaw_start)
               bspeed1=backspeed()
               send.sendContinuousValue(bspeed1,0,0,thetachange2,0)

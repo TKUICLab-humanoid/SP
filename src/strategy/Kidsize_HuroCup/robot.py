@@ -14,7 +14,7 @@ def yaw_forward(x):
     if(x)>yaw_hold+3:
       print("turn right")
       print(x)
-      theta=-6
+      theta=-4
     elif(x)<yaw_hold-3:
       print("turn left")
       print(x)
@@ -45,19 +45,19 @@ def yaw_backward(bx):
     if(bx)>yaw_hold+3:
       print("turn left")
       print(bx)
-      theta=-7
+      theta=-2
     elif(bx)<yaw_hold-3:
       print("turn right")
       print(bx)
-      theta=5
+      theta=1
     else:
-      theta=-5
+      theta=0
     tt=theta#+theta3
     print("total change:", tt) 
     return tt 
 
 
-def color():
+def colored():
   best=[]
   global objxmin
   global objxmax
@@ -68,31 +68,86 @@ def color():
   send.drawImageFunction(2,0,0,320,120,120,0,0,0)
   send.drawImageFunction(3,1,80,240,70,170,0,0,0)
   for j in range (send.color_mask_subject_cnts[0]):
-    if 0.85<(send.color_mask_subject_XMax[0][j]-send.color_mask_subject_XMin[0][j])/(send.color_mask_subject_YMax[0][j]-send.color_mask_subject_YMin[0][j])<1.15:
+    if mode==0:
+      redmin=0.85
+      redmax=1.15
+    else:
+      redmin=1.5
+      redmax=2.0
+    if redmin<(send.color_mask_subject_YMax[0][j]-send.color_mask_subject_YMin[0][j])/(send.color_mask_subject_XMax[0][j]-send.color_mask_subject_XMin[0][j])<redmax:
       objxmin=send.color_mask_subject_XMin[0][j]
       objxmax=send.color_mask_subject_XMax[0][j]
       objymin=send.color_mask_subject_YMin[0][j]
       objymax=send.color_mask_subject_YMax[0][j]
       objsize=send.color_mask_subject_size[0][j]
-      send.drawImageFunction(4,1,objxmin,objxmax,objymin,objymax,50,205,50)
-      ball_size=objsize
-      if ball_size>1000:
-        best.append(ball_size)
+      red_ball=objsize  
+      send.drawImageFunction(4,1,objxmin,objxmax,objymin,objymax,50,205,50)  
+      if red_ball>500:
+        best.append(red_ball)
         best.sort(reverse = True)
         return best[0]
       else:
-        return objsize 
+        return objsize
 
+def colorblue():
+  best1=[]
+  global objxminblue
+  global objxmaxblue
+  global objyminblue
+  global objymaxblue
+  global objsizeblue
+  for j in range (send.color_mask_subject_cnts[2]):
+    if 1.5<(send.color_mask_subject_YMax[2][j]-send.color_mask_subject_YMin[2][j])/(send.color_mask_subject_XMax[2][j]-send.color_mask_subject_XMin[2][j])<2.0:
+      objxminblue=send.color_mask_subject_XMin[2][j]
+      objxmaxblue=send.color_mask_subject_XMax[2][j]
+      objyminblue=send.color_mask_subject_YMin[2][j]
+      objymaxblue=send.color_mask_subject_YMax[2][j]
+      objsizeblue=send.color_mask_subject_size[2][j]  
+      blue_ball=objsizeblue
+      send.drawImageFunction(5,1,objxminblue,objxmaxblue,objyminblue,objymaxblue,80,50,205)
+      if blue_ball>500:
+        best1.append(blue_ball)
+        best1.sort(reverse = True)
+        return best1[0]
+      else:
+        return objsizeblue
+
+def total(zx,zy):
+  global objyminblue
+  global objymaxblue
+  global objymin
+  global objymax
+  global objxminblue
+  global objxmaxblue
+  global objxmin
+  global objxmax  
+  global ballsize
+  for j in range (send.color_mask_subject_cnts[0]):
+    objymin=send.color_mask_subject_XMin[0][j]
+    objymax=send.color_mask_subject_XMax[0][j]
+    objxmin=send.color_mask_subject_XMin[0][j]
+    objxmax=send.color_mask_subject_XMax[0][j]
+  for j in range (send.color_mask_subject_cnts[2]):
+    objyminblue=send.color_mask_subject_XMin[2][j]
+    objymaxblue=send.color_mask_subject_XMax[2][j] 
+    objxminblue=send.color_mask_subject_XMin[2][j]
+    objxmaxblue=send.color_mask_subject_XMax[2][j]   
+  if objxmaxblue>objxmax and objxminblue>objxmin: 
+      ballsize=zx+zy
+      print("sofjadopgjasopgsag")
+      return ballsize
+  else:
+      return 0
   
 def fspeed():
   global firstspd
-  global objsize
+  global color1
   global slowspd
   global speed
-  if objsize<4000:
+  if color1<4000:
     firstspd+=200
-    time.sleep(0.05)
-    speed=min(6000,firstspd)
+    time.sleep(0.08)
+    speed=min(7500,firstspd)
   else:#slow speed
     speed-=300
     time.sleep(0.06)
@@ -102,9 +157,9 @@ def fspeed():
   
 def backspeed():
   global bspeed
-  bspeed-=200
-  time.sleep(0.1)
-  bspeed=max(-3000,bspeed)
+  bspeed-=100
+  time.sleep(0.05)
+  bspeed=max(-4900,bspeed)
   print("backspeeed:",bspeed)
   return bspeed
 
@@ -113,8 +168,14 @@ def movehead():
   global head
   global  color1
   headchange=0
+  if mode==0:
+      redmin=0.85
+      redmax=1.15
+  else:
+      redmin=1.5
+      redmax=2.0
   for j in range (send.color_mask_subject_cnts[0]):
-    if 0.82<(send.color_mask_subject_XMax[0][j]-send.color_mask_subject_XMin[0][j])/(send.color_mask_subject_YMax[0][j]-send.color_mask_subject_YMin[0][j])<1.18:
+    if redmin<(send.color_mask_subject_YMax[0][j]-send.color_mask_subject_YMin[0][j])/(send.color_mask_subject_XMax[0][j]-send.color_mask_subject_XMin[0][j])<redmax:
       objymin=send.color_mask_subject_YMin[0][j]
       objymax=send.color_mask_subject_YMax[0][j]
       #objsize=send.color_mask_subject_size[0][j]
@@ -156,22 +217,28 @@ def movehead():
           send.sendContinuousValue(0,-1000,0,0,0)
           #time.sleep(0.5)
         else:
-          print("xmin,xmax",objxmin,objxmax)"""
+          print("xmin,xmax",objxmin,objxmax)"""          
 def initial():
-  global yaw_start,objxmax,objymax,objymin,objxmin,objsize,head,firstspd,color1,speed1,bspeed1,zzz,ss,yaw_hold,theta,theta2,theta3,thetachange,thetachange2,straight,tt,slowspd,speed,bspeed
+  global yaw_start,objxmax,objymax,objymin,objxmin,objsize,head,firstspd,color1,speed1,bspeed1,zzz,ss,yaw_hold,theta,theta2,theta3,thetachange,thetachange2,straight,tt,slowspd,speed,bspeed,objxmaxblue,objyminblue,objxminblue,objymaxblue,objsizeblue,ball_total,y,x,ballsize,mode
   objxmax=0
   objymax=0
   objymin=0
   objxmin=0
   objsize=0
+  objxmaxblue=0
+  objymaxblue=0
+  objxminblue=0
+  objyminblue=0
+  objsizeblue=0
+  ball_total=0
   head=2047
-  firstspd=3000
+  firstspd=2000
   yaw_start=0
-  color1=0
+  color1=100
   speed=0
   speed1=0
   bspeed=0
-  bspeed1=-1000
+  bspeed1=-1500
   zzz=0
   ss=0
   yaw_hold=0
@@ -183,8 +250,10 @@ def initial():
   straight=0
   tt=0
   slowspd=0
-  
-
+  x=0
+  y=0
+  ballsize=0
+  mode=1
 aa = False
 imgdata=[[ None for i in range(240)]for j in range(320)]
 if __name__ == '__main__':
@@ -198,13 +267,29 @@ if __name__ == '__main__':
           yaw_hold=send.imu_value_Yaw
           time.sleep(0.1)
           print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+          mode=1 #choice mode 0 one color 1 two color
           aa=True
         else:
             
             yaw_start=send.imu_value_Yaw
-            color1=color()
-            if color1==None:
-              color1=1000
+            print("mode",mode)
+            if mode==0:
+              color1=colored()
+              if color1==None:
+                color1=1000
+                print("gkwrtgreosrtretreterwtretretr")   
+            else:    
+              x=colored()
+              y=colorblue()
+              if x==None and y!=None:
+                x=y
+              elif y==None and x!=None:
+                y=x
+              elif x==None and y==None:
+                x=500
+                y=400   
+                print("nothing nothing nothing nothing nothing") 
+              color1=total(x,y)
             zzz=movehead()
             print("head theta:",zzz)
             
@@ -215,7 +300,7 @@ if __name__ == '__main__':
                 print("ball ball ball",color1)
                 print("move on move on move on")
                 
-            if color1>9500 or ss==1:
+            if color1>7700 or ss==1:
               thetachange2=yaw_backward(yaw_start)
               bspeed1=backspeed()
               send.sendContinuousValue(bspeed1,0,0,thetachange2,0)

@@ -14,11 +14,11 @@ def yaw_forward(x):
     if(x)>yaw_hold+3:
       print("turn right")
       print(x)
-      theta=-4
+      theta=-2
     elif(x)<yaw_hold-3:
       print("turn left")
       print(x)
-      theta=4
+      theta=2
     else:
       theta=0
     return theta
@@ -45,11 +45,11 @@ def yaw_backward(bx):
     if(bx)>yaw_hold+3:
       print("turn left")
       print(bx)
-      theta=-2
+      theta=-3
     elif(bx)<yaw_hold-3:
       print("turn right")
       print(bx)
-      theta=1
+      theta=3
     else:
       theta=0
     tt=theta#+theta3
@@ -147,11 +147,11 @@ def fspeed():
   if color1<4000:
     firstspd+=200
     time.sleep(0.08)
-    speed=min(7500,firstspd)
+    speed=min(7600,firstspd)
   else:#slow speed
     speed-=300
     time.sleep(0.06)
-    speed=max(1500,speed)
+    speed=max(2000,speed)
   print("speed:",speed)
   return speed
   
@@ -159,7 +159,7 @@ def backspeed():
   global bspeed
   bspeed-=100
   time.sleep(0.05)
-  bspeed=max(-4900,bspeed)
+  bspeed=max(-5300,bspeed)
   print("backspeeed:",bspeed)
   return bspeed
 
@@ -203,6 +203,8 @@ def movehead():
           realhead=head
           send.sendHeadMotor(2,realhead,100)
           return realhead
+      elif color1==900:
+          send.sendHeadMotor(2,head,100)
       else:
           realhead=head
           send.sendHeadMotor(2,realhead,100)
@@ -232,13 +234,13 @@ def initial():
   objsizeblue=0
   ball_total=0
   head=2047
-  firstspd=2000
+  firstspd=4000
   yaw_start=0
   color1=100
   speed=0
   speed1=0
   bspeed=0
-  bspeed1=-1500
+  bspeed1=-2000
   zzz=0
   ss=0
   yaw_hold=0
@@ -290,17 +292,20 @@ if __name__ == '__main__':
                 y=400   
                 print("nothing nothing nothing nothing nothing") 
               color1=total(x,y)
-            zzz=movehead()
-            print("head theta:",zzz)
+            """zzz=movehead()
+            print("head theta:",zzz)"""
             
             if ss==0:
+                zzz=movehead()
+                print("head theta:",zzz)
                 thetachange=yaw_forward(yaw_start)
                 speed1=fspeed()
                 send.sendContinuousValue(speed1,0,0,thetachange,0)
                 print("ball ball ball",color1)
                 print("move on move on move on")
                 
-            if color1>7700 or ss==1:
+            if color1>8000 or ss==1:
+              send.sendHeadMotor(2,2047,100)
               thetachange2=yaw_backward(yaw_start)
               bspeed1=backspeed()
               send.sendContinuousValue(bspeed1,0,0,thetachange2,0)

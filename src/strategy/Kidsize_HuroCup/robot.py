@@ -18,7 +18,7 @@ def yaw_forward(x):
     elif(x)<yaw_hold-3:
       print("turn left")
       print(x)
-      theta=2
+      theta=4
     else:
       theta=0
     return theta
@@ -49,7 +49,7 @@ def yaw_backward(bx):
     elif(bx)<yaw_hold-3:
       print("turn right")
       print(bx)
-      theta=3
+      theta=1
     else:
       theta=0
     tt=theta#+theta3
@@ -146,8 +146,8 @@ def fspeed():
   global speed
   if color1<4000:
     firstspd+=200
-    time.sleep(0.08)
-    speed=min(7600,firstspd)
+    time.sleep(0.1)
+    speed=min(8000,firstspd)
   else:#slow speed
     speed-=300
     time.sleep(0.06)
@@ -159,7 +159,7 @@ def backspeed():
   global bspeed
   bspeed-=100
   time.sleep(0.05)
-  bspeed=max(-5300,bspeed)
+  bspeed=max(-5000,bspeed)
   print("backspeeed:",bspeed)
   return bspeed
 
@@ -203,8 +203,8 @@ def movehead():
           realhead=head
           send.sendHeadMotor(2,realhead,100)
           return realhead
-      elif color1==900:
-          send.sendHeadMotor(2,head,100)
+      # elif color1==900:
+      #     send.sendHeadMotor(2,head,100)
       else:
           realhead=head
           send.sendHeadMotor(2,realhead,100)
@@ -304,7 +304,7 @@ if __name__ == '__main__':
                 print("ball ball ball",color1)
                 print("move on move on move on")
                 
-            if color1>8000 or ss==1:
+            if color1>7800 or ss==1:
               send.sendHeadMotor(2,2047,100)
               thetachange2=yaw_backward(yaw_start)
               bspeed1=backspeed()

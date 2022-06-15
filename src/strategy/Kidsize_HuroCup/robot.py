@@ -18,9 +18,9 @@ def yaw_forward(x):
     elif(x)<yaw_hold-3:
       print("turn left")
       print(x)
-      theta=4
+      theta=3
     else:
-      theta=0
+      theta=1
     return theta
     
 def yaw_backward(bx):
@@ -45,7 +45,7 @@ def yaw_backward(bx):
     if(bx)>yaw_hold+3:
       print("turn left")
       print(bx)
-      theta=-3
+      theta=-2
     elif(bx)<yaw_hold-3:
       print("turn right")
       print(bx)
@@ -159,7 +159,7 @@ def backspeed():
   global bspeed
   bspeed-=100
   time.sleep(0.05)
-  bspeed=max(-5000,bspeed)
+  bspeed=max(-7000,bspeed)
   print("backspeeed:",bspeed)
   return bspeed
 
@@ -188,7 +188,7 @@ def movehead():
           if head>=2200:
             head=2150
           else:  
-            head+=(int)(headchange/160)
+            head+=(int)(headchange/160+10)
           #time.sleep(0.4)
           realhead=head
           send.sendHeadMotor(2,realhead,50)
@@ -199,7 +199,7 @@ def movehead():
             head=1200
         #time.sleep(0.4)
           else:
-            head-=(int)(headchange/160)
+            head-=(int)(headchange/160+10)
           realhead=head
           send.sendHeadMotor(2,realhead,100)
           return realhead

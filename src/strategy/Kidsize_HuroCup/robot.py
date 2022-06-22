@@ -20,7 +20,7 @@ def yaw_forward(x):
       print(x)
       theta=3
     else:
-      theta=1
+      theta=0
     return theta
     
 def yaw_backward(bx):
@@ -66,7 +66,7 @@ def colored():
   global objsize
   send.drawImageFunction(1,0,160,160,0,240,0,0,0)
   send.drawImageFunction(2,0,0,320,120,120,0,0,0)
-  send.drawImageFunction(3,1,80,240,70,170,0,0,0)
+  send.drawImageFunction(3,1,40,280,40,200,0,0,0)
   for j in range (send.color_mask_subject_cnts[0]):
     if mode==0:
       redmin=0.85
@@ -191,7 +191,7 @@ def movehead():
             head+=(int)(headchange/160+10)
           #time.sleep(0.4)
           realhead=head
-          send.sendHeadMotor(2,realhead,50)
+          send.sendHeadMotor(2,realhead,1000)
           return realhead
       elif objymax>170 and objymin>70:
           print("head down   head down   head down")
@@ -201,13 +201,13 @@ def movehead():
           else:
             head-=(int)(headchange/160+10)
           realhead=head
-          send.sendHeadMotor(2,realhead,100)
+          send.sendHeadMotor(2,realhead,1000)
           return realhead
       # elif color1==900:
       #     send.sendHeadMotor(2,head,100)
       else:
           realhead=head
-          send.sendHeadMotor(2,realhead,100)
+          send.sendHeadMotor(2,realhead,1000)
           return realhead  
 
 """def hor():

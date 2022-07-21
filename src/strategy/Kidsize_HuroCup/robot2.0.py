@@ -15,14 +15,14 @@ mode = 1            #目標模式
 head = 2047         #頭部馬達初始角度
 speed = 8600        #前進初速度
 bspeed1 = -3000     #後退初速度
-max_speed = 8600    #前進最快速度
+max_speed = 8300    #前進最快速度
 min_speed = 3000    #減速最慢速度  
-max_bspeed = -7500  #後退最快速度
+max_bspeed = -7000  #後退最快速度
 speed_add = 200     #前進增加量
 speed_sub = 300     #前進減速量
 bspeed_add = 100    #後退增加量
 theta = 0           #副函式進退YAW值調整
-thetafix=2         #前進YAw值補償
+thetafix=3        #前進YAw值補償
 thetafixb=4       #後退YAw值補償
 target = 4000       #目標面積
 
@@ -53,7 +53,7 @@ def yaw_backward(by): #後退YAW值調整
       print(by)
       theta=1
     else:
-      theta=0
+      theta=1
     return theta 
 
 

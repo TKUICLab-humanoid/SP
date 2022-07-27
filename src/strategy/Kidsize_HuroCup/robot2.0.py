@@ -13,18 +13,18 @@ strategy = False    #第一次指撥flag
 forward = 0         #前進flag
 mode = 1            #目標模式
 head = 2047         #頭部馬達初始角度
-speed = 5000        #前進初速度
-bspeed1 = -2000     #後退初速度
-max_speed = 8000    #前進最快速度
-min_speed = 2000    #減速最慢速度  
-max_bspeed = -6000  #後退最快速度
+speed = 8600        #前進初速度
+bspeed1 = -3000     #後退初速度
+max_speed = 8300    #前進最快速度
+min_speed = 3000    #減速最慢速度  
+max_bspeed = -7000  #後退最快速度
 speed_add = 200     #前進增加量
 speed_sub = 300     #前進減速量
 bspeed_add = 100    #後退增加量
 theta = 0           #副函式進退YAW值調整
-thetafix=2          #前進YAw值補償
-thetafixb=1       #後退YAw值補償
-target = 6000       #目標面積
+thetafix=3        #前進YAw值補償
+thetafixb=4       #後退YAw值補償
+target = 4000       #目標面積
 
 def yaw_forward(y): #前進YAW值調整
     global yaw_hold
@@ -47,13 +47,13 @@ def yaw_backward(by): #後退YAW值調整
     if(by)>yaw_hold+3:
       print("turn left")
       print(by)
-      theta=-2
+      theta=-1
     elif(by)<yaw_hold-3:
       print("turn right")
       print(by)
-      theta=2
+      theta=1
     else:
-      theta=0
+      theta=1
     return theta 
 
 
@@ -117,12 +117,17 @@ def total(zx,zy):    #紅籃球總面積
   global objxmaxblue
   global objxmin
   global objxmax  
-  global ballsize   
-  if objxmaxblue>objxmax and objxminblue>objxmin: 
+  global objymin
+  global objymax
+  global ballsize
+  global get_target   
+  if objxmaxblue>objxmax and objxminblue>objxmin and 0.8<(objymax-objymin)/(objxmaxblue-objxmin)<1.2: 
+      get_target=True
       ballsize=zx+zy
       print("sofjadopgjasopgsag")
       return ballsize
   else:
+      get_target=False
       return 0
   
 def fspeed():      #前進速度調整
@@ -153,10 +158,10 @@ def movehead():    #頭部馬達調整
   global objymax
   vertical = (objymax+objymin)/2-100
   temp=40.0*vertical/240
-  time.sleep(0.04)
+  time.sleep(0.03)
   if abs(temp)>3:
     head-=11.378*temp*0.4
-    time.sleep(0.04)
+    time.sleep(0.03)
     if head>2210:
       head=2210
     elif head<1100:
@@ -166,7 +171,7 @@ def movehead():    #頭部馬達調整
   return head      
         
 def initial():    #初始化
-  global yaw_start,objxmax,objymax,objymin,objxmin,objsize,head,color1,speed1,bspeed1,headangle,forward,yaw_hold,theta,thetachange,thetachange2,speed,max_speed,min_speed,bspeed, max_bspeed,objxmaxblue,objyminblue,objxminblue,objymaxblue,objsizeblue,blue_size,red_size,ballsize,thetafix,thetafixb,target
+  global yaw_start,objxmax,objymax,objymin,objxmin,objsize,head,color1,speed1,bspeed1,headangle,forward,yaw_hold,theta,thetachange,thetachange2,speed,max_speed,min_speed,bspeed, max_bspeed,objxmaxblue,objyminblue,objxminblue,objymaxblue,objsizeblue,blue_size,red_size,ballsize,thetafix,thetafixb,target,get_target
   objxmax=0
   objymax=0
   objymin=0
@@ -230,12 +235,15 @@ if __name__ == '__main__':
               color1=total(red_size,blue_size)
       
             if forward==0:
-                headangle=movehead()
+                if get_target==True:
+                  headangle=movehead()
                 print("head theta:",headangle)
                 thetachange=yaw_forward(yaw_start)+thetafix
                 speed1=fspeed()
                 send.sendContinuousValue(speed1,0,0,thetachange,0)
+                print("theta= ",thetachange)
                 print("ball ball ball",color1)
+                print('target = ',target)
                 print("move on move on move on")
                 
             if color1>=target or forward==1:
@@ -243,6 +251,7 @@ if __name__ == '__main__':
               thetachange2=yaw_backward(yaw_start)+thetafixb
               bspeed1=backspeed()
               send.sendContinuousValue(bspeed1,0,0,thetachange2,0)
+              print('thetachange2 = ',thetachange2)
               print("go back go back go back")
               forward=1
 

@@ -13,18 +13,18 @@ strategy = False    #第一次指撥flag
 forward = 0         #前進flag
 mode = 1            #目標模式
 head = 2047         #頭部馬達初始角度
-speed = 8600        #前進初速度
+speed = 8300        #前進初速度
 bspeed1 = -3000     #後退初速度
 max_speed = 8300    #前進最快速度
 min_speed = 3000    #減速最慢速度  
-max_bspeed = -7000  #後退最快速度
+max_bspeed = -5400  #後退最快速度
 speed_add = 200     #前進增加量
 speed_sub = 300     #前進減速量
 bspeed_add = 100    #後退增加量
 theta = 0           #副函式進退YAW值調整
-thetafix=3        #前進YAw值補償
-thetafixb=4       #後退YAw值補償
-target = 4000       #目標面積
+thetafix=1        #前進YAw值補償
+thetafixb= -1       #後退YAw值補償
+target = 4700       #目標面積
 
 def yaw_forward(y): #前進YAW值調整
     global yaw_hold
@@ -47,13 +47,13 @@ def yaw_backward(by): #後退YAW值調整
     if(by)>yaw_hold+3:
       print("turn left")
       print(by)
-      theta=-1
+      theta=-2
     elif(by)<yaw_hold-3:
       print("turn right")
       print(by)
       theta=1
     else:
-      theta=1
+      theta=-1
     return theta 
 
 

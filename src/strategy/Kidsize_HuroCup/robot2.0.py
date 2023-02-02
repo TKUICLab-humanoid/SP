@@ -12,19 +12,19 @@ send = Sendmessage()
 strategy = False    #第一次指撥flag
 forward = 0         #前進flag
 mode = 1            #目標模式
-head = 2047         #頭部馬達初始角度
-speed = 8300        #前進初速度
+head = 2048         #頭部馬達初始角度
+speed = 3000        #前進初速度
 bspeed1 = -3000     #後退初速度
-max_speed = 8300    #前進最快速度
+max_speed = 3000    #前進最快速度
 min_speed = 3000    #減速最慢速度  
-max_bspeed = -7000  #後退最快速度
+max_bspeed = -3000  #後退最快速度
 speed_add = 200     #前進增加量
 speed_sub = 300     #前進減速量
 bspeed_add = 100    #後退增加量
 theta = 0           #副函式進退YAW值調整
-thetafix=-2        #前進YAw值補償
-thetafixb= -1       #後退YAw值補償
-target = 4500       #目標面積
+thetafix=0        #前進YAw值補償
+thetafixb=0       #後退YAw值補償
+target = 2000       #目標面積
 
 def yaw_forward(y): #前進YAW值調整
     global yaw_hold
@@ -32,13 +32,13 @@ def yaw_forward(y): #前進YAW值調整
     if(y)>yaw_hold+3:
       print("turn right")
       print(y)
-      theta=-2 
+      theta=-4 
     elif(y)<yaw_hold-3:
       print("turn left")
       print(y)
-      theta=2
+      theta=4
     else:
-      theta=-1
+      theta=0
     return theta
     
 def yaw_backward(by): #後退YAW值調整
@@ -47,13 +47,13 @@ def yaw_backward(by): #後退YAW值調整
     if(by)>yaw_hold+3:
       print("turn left")
       print(by)
-      theta=-2
+      theta=-4
     elif(by)<yaw_hold-3:
       print("turn right")
       print(by)
-      theta=1
+      theta=4
     else:
-      theta=-1
+      theta=0
     return theta 
 
 
@@ -135,7 +135,7 @@ def fspeed():      #前進速度調整
   global min_speed
   global color1
   global speed
-  if color1<4000:
+  if color1<1900:
     speed+=speed_add 
     time.sleep(0.1)
     speed=min(max_speed,speed)
@@ -157,15 +157,15 @@ def movehead():    #頭部馬達調整
   global objymin
   global objymax
   vertical = (objymax+objymin)/2-100
-  temp=40.0*vertical/240
+  temp=-40.0*vertical/240
   time.sleep(0.03)
   if abs(temp)>3:
     head-=11.378*temp*0.4
     time.sleep(0.01)
-    if head>2210:
-      head=2210
-    elif head<1100:
-      head=1100
+    if head>2600:
+      head=2600
+    elif head<2048:
+      head=2048
   send.sendHeadMotor(2,round(head),50)
   time.sleep(0.01)  
   return head      
@@ -182,10 +182,10 @@ def initial():    #初始化
   objxminblue=0
   objyminblue=0
   objsizeblue=0
-  head=2047
+  head=2048
   yaw_start=0
   color1=100
-  speed=5000
+  speed=3000
   min_speed=2000
   speed1=0
   bspeed=0
@@ -208,6 +208,7 @@ if __name__ == '__main__':
       if send.is_start == True:
         if strategy == False:
           initial()
+          send.sendSensorReset()
           send.sendBodyAuto(0,0,0,0,1,0)
           yaw_hold=send.imu_value_Yaw
           time.sleep(0.1)
@@ -247,10 +248,11 @@ if __name__ == '__main__':
                 print("move on move on move on")
                 
             if color1>=target or forward==1:
-              send.sendHeadMotor(2,2047,100)
+              send.sendHeadMotor(2,2048,100)
               thetachange2=yaw_backward(yaw_start)+thetafixb
               bspeed1=backspeed()
               send.sendContinuousValue(bspeed1,0,0,thetachange2,0)
+              print('speed======',bspeed1)
               print('thetachange2 = ',thetachange2)
               print("go back go back go back")
               forward=1
@@ -259,7 +261,8 @@ if __name__ == '__main__':
           if strategy == True:
               send.sendBodyAuto(0,0,0,0,1,0)
               initial()
-              send.sendHeadMotor(2,2047,100)
+              send.sendSensorReset()
+              send.sendHeadMotor(2,2048,100)
               strategy=False
       
   except rospy.ROSInterruptException:

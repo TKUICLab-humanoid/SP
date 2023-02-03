@@ -13,11 +13,11 @@ strategy = False    #第一次指撥flag
 forward = 0         #前進flag
 mode = 1            #目標模式
 head = 2048         #頭部馬達初始角度
-speed = 3000        #前進初速度
-bspeed1 = -3000     #後退初速度
-max_speed = 3000    #前進最快速度
-min_speed = 3000    #減速最慢速度  
-max_bspeed = -3000  #後退最快速度
+speed = 4000        #前進初速度
+bspeed1 = -4000     #後退初速度
+max_speed = 7000    #前進最快速度
+min_speed = 6000    #減速最慢速度  
+max_bspeed = -6000  #後退最快速度
 speed_add = 200     #前進增加量
 speed_sub = 300     #前進減速量
 bspeed_add = 100    #後退增加量
@@ -29,29 +29,29 @@ target = 2000       #目標面積
 def yaw_forward(y): #前進YAW值調整
     global yaw_hold
     global theta
-    if(y)>yaw_hold+3:
+    if(y)>yaw_hold+5:
       print("turn right")
       print(y)
-      theta=-4 
-    elif(y)<yaw_hold-3:
+      theta=-1
+    elif(y)<yaw_hold-5:
       print("turn left")
       print(y)
-      theta=4
+      theta=1
     else:
       theta=0
     return theta
-    
+      
 def yaw_backward(by): #後退YAW值調整
     global yaw_hold
     global theta
-    if(by)>yaw_hold+3:
+    if(by)>yaw_hold+8:
       print("turn left")
       print(by)
-      theta=-4
-    elif(by)<yaw_hold-3:
+      theta=-2
+    elif(by)<yaw_hold-8:
       print("turn right")
       print(by)
-      theta=4
+      theta=2
     else:
       theta=0
     return theta 
@@ -185,11 +185,11 @@ def initial():    #初始化
   head=2048
   yaw_start=0
   color1=100
-  speed=3000
-  min_speed=2000
+  speed=4000
+  min_speed=6000
   speed1=0
   bspeed=0
-  bspeed1=-2000
+  bspeed1=-4000
   headangle=0
   forward=0
   yaw_hold=0
@@ -256,7 +256,7 @@ if __name__ == '__main__':
               print('thetachange2 = ',thetachange2)
               print("go back go back go back")
               forward=1
-
+              
       if send.is_start == False:
           if strategy == True:
               send.sendBodyAuto(0,0,0,0,1,0)

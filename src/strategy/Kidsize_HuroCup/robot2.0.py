@@ -5,7 +5,7 @@ import rospy
 import numpy as np
 from Python_API import Sendmessage
 import time
-
+get_target = False
 send = Sendmessage()
 
 "常用參數表"
@@ -13,18 +13,18 @@ strategy = False    #第一次指撥flag
 forward = 0         #前進flag
 mode = 1            #目標模式
 head = 2047         #頭部馬達初始角度
-speed = 8300        #前進初速度
-bspeed1 = -3000     #後退初速度
-max_speed = 8300    #前進最快速度
+speed = 4000        #前進初速度
+bspeed1 = -4000     #後退初速度
+max_speed = 4000    #前進最快速度
 min_speed = 3000    #減速最慢速度  
-max_bspeed = -7000  #後退最快速度
+max_bspeed = -4000  #後退最快速度
 speed_add = 200     #前進增加量
 speed_sub = 300     #前進減速量
-bspeed_add = 100    #後退增加量
+bspeed_add = 200    #後退增加量
 theta = 0           #副函式進退YAW值調整
-thetafix=-2        #前進YAw值補償
-thetafixb= -1       #後退YAw值補償
-target = 4500       #目標面積
+thetafix=0        #前進YAw值補償
+thetafixb=0       #後退YAw值補償
+target = 8500       #目標面積
 
 def yaw_forward(y): #前進YAW值調整
     global yaw_hold
@@ -38,7 +38,7 @@ def yaw_forward(y): #前進YAW值調整
       print(y)
       theta=2
     else:
-      theta=-1
+      theta=0
     return theta
     
 def yaw_backward(by): #後退YAW值調整
@@ -51,9 +51,9 @@ def yaw_backward(by): #後退YAW值調整
     elif(by)<yaw_hold-3:
       print("turn right")
       print(by)
-      theta=1
+      theta=2
     else:
-      theta=-1
+      theta=0
     return theta 
 
 
@@ -104,7 +104,8 @@ def colorblue():   #藍色球面積
       objymaxblue=send.color_mask_subject_YMax[2][j]
       objsizeblue=send.color_mask_subject_size[2][j]  
       blue_ball=objsizeblue
-      send.drawImageFunction(5,1,objxminblue,objxmaxblue,objyminblue,objymaxblue,80,50,205)
+      send.drawImageFunction(5,1
+      ,objxminblue,objxmaxblue,objyminblue,objymaxblue,80,50,205)
       if blue_ball>100:
         best1.append(blue_ball)
         best1.sort(reverse = True)
@@ -120,7 +121,12 @@ def total(zx,zy):    #紅籃球總面積
   global objymin
   global objymax
   global ballsize
-  global get_target   
+  global get_target  
+  # if mode == 0:
+  #   get_target=True
+  #   ballsize = zx
+  #   return ballsize
+  # else:
   if objxmaxblue>objxmax and objxminblue>objxmin and 0.8<(objymax-objymin)/(objxmaxblue-objxmin)<1.2: 
       get_target=True
       ballsize=zx+zy
@@ -148,7 +154,7 @@ def fspeed():      #前進速度調整
 def backspeed():    #後退速度加速
   global bspeed
   bspeed-=bspeed_add
-  time.sleep(0.05)
+  time.sleep(0.1)
   bspeed=max(max_bspeed,bspeed)
   return bspeed
 
@@ -164,8 +170,8 @@ def movehead():    #頭部馬達調整
     time.sleep(0.01)
     if head>2210:
       head=2210
-    elif head<1100:
-      head=1100
+    elif head<1300:
+      head=1300
   send.sendHeadMotor(2,round(head),50)
   time.sleep(0.01)  
   return head      
@@ -185,11 +191,11 @@ def initial():    #初始化
   head=2047
   yaw_start=0
   color1=100
-  speed=5000
-  min_speed=2000
+  speed=4000
+  min_speed=3000
   speed1=0
   bspeed=0
-  bspeed1=-2000
+  bspeed1=-4000
   headangle=0
   forward=0
   yaw_hold=0
@@ -208,6 +214,7 @@ if __name__ == '__main__':
       if send.is_start == True:
         if strategy == False:
           initial()
+          send.sendSensorReset()
           send.sendBodyAuto(0,0,0,0,1,0)
           yaw_hold=send.imu_value_Yaw
           time.sleep(0.1)
@@ -218,6 +225,7 @@ if __name__ == '__main__':
             yaw_start=send.imu_value_Yaw
             if mode==0:
               color1=colored()
+              get_target=True
               if color1==None:
                 color1=1000
                 print("no catch red ball no catch red ball ")   
@@ -233,18 +241,19 @@ if __name__ == '__main__':
                 blue_size=500   
                 print("both nothing nothing nothing nothing ") 
               color1=total(red_size,blue_size)
-      
+
             if forward==0:
-                if get_target==True:
-                  headangle=movehead()
-                print("head theta:",headangle)
-                thetachange=yaw_forward(yaw_start)+thetafix
-                speed1=fspeed()
-                send.sendContinuousValue(speed1,0,0,thetachange,0)
-                print("theta= ",thetachange)
-                print("ball ball ball",color1)
-                print('target = ',target)
-                print("move on move on move on")
+              print("gettarget=",get_target)
+              if get_target==True:
+                headangle=movehead()
+              print("head theta:",headangle)
+              thetachange=yaw_forward(yaw_start)+thetafix
+              speed1=fspeed()
+              send.sendContinuousValue(speed1,0,0,thetachange,0)
+              print("theta= ",thetachange)
+              print("ball ball ball",color1)
+              print('target = ',target)
+              print("move on move on move on")
                 
             if color1>=target or forward==1:
               send.sendHeadMotor(2,2047,100)
@@ -254,13 +263,14 @@ if __name__ == '__main__':
               print('thetachange2 = ',thetachange2)
               print("go back go back go back")
               forward=1
-
       if send.is_start == False:
-          if strategy == True:
-              send.sendBodyAuto(0,0,0,0,1,0)
-              initial()
-              send.sendHeadMotor(2,2047,100)
-              strategy=False
+        # print('go')
+        print(send.color_mask_subject_size[0][0]+send.color_mask_subject_size[2][0])
+        if strategy == True:
+            send.sendBodyAuto(0,0,0,0,1,0)
+            initial()
+            send.sendHeadMotor(2,2047,100)
+            strategy=False
       
   except rospy.ROSInterruptException:
         pass

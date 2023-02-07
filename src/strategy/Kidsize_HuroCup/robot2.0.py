@@ -23,18 +23,18 @@ speed_sub = 300     #前進減速量
 bspeed_add = 200    #後退增加量
 theta = 0           #副函式進退YAW值調整
 thetafix=0        #前進YAw值補償
-thetafixb=0       #後退YAw值補償
-target = 8500       #目標面積
+thetafixb=-2       #後退YAw值補償
+target = 8000       #目標面積
 
 def yaw_forward(y): #前進YAW值調整
     global yaw_hold
     global theta
     if(y)>yaw_hold+3:
-      print("turn right")
+      print("----->>>>>")
       print(y)
       theta=-2 
     elif(y)<yaw_hold-3:
-      print("turn left")
+      print("<<<<<-----")
       print(y)
       theta=2
     else:
@@ -45,11 +45,11 @@ def yaw_backward(by): #後退YAW值調整
     global yaw_hold
     global theta
     if(by)>yaw_hold+3:
-      print("turn left")
+      print("<<<<<-----")
       print(by)
       theta=-2
     elif(by)<yaw_hold-3:
-      print("turn right")
+      print("----->>>>>")
       print(by)
       theta=2
     else:
@@ -130,7 +130,7 @@ def total(zx,zy):    #紅籃球總面積
   if objxmaxblue>objxmax and objxminblue>objxmin and 0.8<(objymax-objymin)/(objxmaxblue-objxmin)<1.2: 
       get_target=True
       ballsize=zx+zy
-      print("sofjadopgjasopgsag")
+      print("-----")
       return ballsize
   else:
       get_target=False
@@ -239,7 +239,7 @@ if __name__ == '__main__':
               elif red_size==None and blue_size==None:
                 red_size=500
                 blue_size=500   
-                print("both nothing nothing nothing nothing ") 
+                print("ball size ") 
               color1=total(red_size,blue_size)
 
             if forward==0:

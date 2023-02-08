@@ -22,9 +22,9 @@ speed_add = 200     #前進增加量
 speed_sub = 300     #前進減速量
 bspeed_add = 200    #後退增加量
 theta = 0           #副函式進退YAW值調整
-thetafix=0        #前進YAw值補償
-thetafixb=-2       #後退YAw值補償
-target = 8000       #目標面積
+thetafix=1        #前進YAw值補償
+thetafixb=-1       #後退YAw值補償
+target = 9200       #目標面積
 
 def yaw_forward(y): #前進YAW值調整
     global yaw_hold
@@ -64,9 +64,6 @@ def colored():   #紅色球面積
   global objymin
   global objymax
   global objsize
-  send.drawImageFunction(1,0,160,160,0,240,0,0,0)
-  send.drawImageFunction(2,0,0,320,120,120,0,0,0)
-  send.drawImageFunction(3,1,40,280,40,200,0,0,0)
   if mode==0:
     redmin=0.85
     redmax=1.15
@@ -211,9 +208,13 @@ if __name__ == '__main__':
   try:
     send = Sendmessage()
     while not rospy.is_shutdown():
+      send.drawImageFunction(1,0,160,160,0,240,0,0,0)
+      send.drawImageFunction(2,0,0,320,120,120,0,0,0)
+      send.drawImageFunction(3,1,40,280,40,200,0,0,0)
       if send.is_start == True:
         if strategy == False:
           initial()
+          send.sendHeadMotor(2,2047,50)
           send.sendSensorReset()
           send.sendBodyAuto(0,0,0,0,1,0)
           yaw_hold=send.imu_value_Yaw

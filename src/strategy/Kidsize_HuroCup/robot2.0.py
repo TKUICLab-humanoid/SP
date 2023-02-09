@@ -15,16 +15,16 @@ mode = 1            #目標模式
 head = 2048         #頭部馬達初始角度
 speed = 4000        #前進初速度
 bspeed1 = -4000     #後退初速度
-max_speed = 7000    #前進最快速度
+max_speed = 6000    #前進最快速度
 min_speed = 6000    #減速最慢速度  
-max_bspeed = -6000  #後退最快速度
+max_bspeed = -5000  #後退最快速度
 speed_add = 200     #前進增加量
 speed_sub = 300     #前進減速量
 bspeed_add = 100    #後退增加量
 theta = 0           #副函式進退YAW值調整
 thetafix=0        #前進YAw值補償
-thetafixb=0       #後退YAw值補償
-target = 2000       #目標面積
+thetafixb=-1       #後退YAw值補償
+target = 10600       #目標面積
 
 def yaw_forward(y): #前進YAW值調整
     global yaw_hold
@@ -32,11 +32,11 @@ def yaw_forward(y): #前進YAW值調整
     if(y)>yaw_hold+5:
       print("turn right")
       print(y)
-      theta=-1
+      theta=-2
     elif(y)<yaw_hold-5:
       print("turn left")
       print(y)
-      theta=1
+      theta=2
     else:
       theta=0
     return theta
@@ -63,10 +63,7 @@ def colored():   #紅色球面積
   global objxmax
   global objymin
   global objymax
-  global objsize
-  send.drawImageFunction(1,0,160,160,0,240,0,0,0)
-  send.drawImageFunction(2,0,0,320,120,120,0,0,0)
-  send.drawImageFunction(3,1,40,280,40,200,0,0,0)
+  global objsize  
   if mode==0:
     redmin=0.85
     redmax=1.15
@@ -74,7 +71,8 @@ def colored():   #紅色球面積
     redmin=1.5
     redmax=2.0
   for j in range (send.color_mask_subject_cnts[0]):
-    if redmin<(send.color_mask_subject_YMax[0][j]-send.color_mask_subject_YMin[0][j])/(send.color_mask_subject_XMax[0][j]-send.color_mask_subject_XMin[0][j])<redmax:
+    # if redmin<(send.color_mask_subject_YMax[0][j]-send.color_mask_subject_YMin[0][j])/(send.color_mask_subject_XMax[0][j]-send.color_mask_subject_XMin[0][j])<redmax:
+    if 80<send.color_mask_subject_X[0][j]<240:
       objxmin=send.color_mask_subject_XMin[0][j]
       objxmax=send.color_mask_subject_XMax[0][j]
       objymin=send.color_mask_subject_YMin[0][j]
@@ -88,6 +86,7 @@ def colored():   #紅色球面積
         return best[0]
       else:
         return objsize
+        # return 0
 
 def colorblue():   #藍色球面積
   best1=[]
@@ -97,7 +96,8 @@ def colorblue():   #藍色球面積
   global objymaxblue
   global objsizeblue
   for j in range (send.color_mask_subject_cnts[2]):
-    if 1.7<(send.color_mask_subject_YMax[2][j]-send.color_mask_subject_YMin[2][j])/(send.color_mask_subject_XMax[2][j]-send.color_mask_subject_XMin[2][j])<2.5:
+    # if 1.5<(send.color_mask_subject_YMax[2][j]-send.color_mask_subject_YMin[2][j])/(send.color_mask_subject_XMax[2][j]-send.color_mask_subject_XMin[2][j])<2.0:
+    if 80<send.color_mask_subject_X[2][j]<240:
       objxminblue=send.color_mask_subject_XMin[2][j]
       objxmaxblue=send.color_mask_subject_XMax[2][j]
       objyminblue=send.color_mask_subject_YMin[2][j]
@@ -111,6 +111,7 @@ def colorblue():   #藍色球面積
         return best1[0]
       else:
         return objsizeblue
+        # return 0
 
 def total(zx,zy):    #紅籃球總面積
   global objxminblue
@@ -121,7 +122,7 @@ def total(zx,zy):    #紅籃球總面積
   global objymax
   global ballsize
   global get_target   
-  if objxmaxblue>objxmax and objxminblue>objxmin and 0.8<(objymax-objymin)/(objxmaxblue-objxmin)<1.2: 
+  if objxmaxblue>objxmax and objxminblue>objxmin :#and 0.8<(objymax-objymin)/(objxmaxblue-objxmin)<1.2: 
       get_target=True
       ballsize=zx+zy
       print("sofjadopgjasopgsag")
@@ -205,17 +206,21 @@ if __name__ == '__main__':
   try:
     send = Sendmessage()
     while not rospy.is_shutdown():
+      send.drawImageFunction(1,0,160,160,0,240,0,0,0)
+      send.drawImageFunction(2,0,0,320,120,120,0,0,0)
+      send.drawImageFunction(3,1,40,280,40,200,0,0,0)
       if send.is_start == True:
         if strategy == False:
+          send.sendHeadMotor(2,2048,100)
+          time.sleep(0.1)
           initial()
           send.sendSensorReset()
           send.sendBodyAuto(0,0,0,0,1,0)
-          yaw_hold=send.imu_value_Yaw
+          yaw_hold=0
           time.sleep(0.1)
           mode=1 #choice mode 0 one color 1 two color
           strategy=True
         else:
-            
             yaw_start=send.imu_value_Yaw
             if mode==0:
               color1=colored()
@@ -238,13 +243,13 @@ if __name__ == '__main__':
             if forward==0:
                 if get_target==True:
                   headangle=movehead()
-                print("head theta:",headangle)
+                # print("head theta:",headangle)
                 thetachange=yaw_forward(yaw_start)+thetafix
                 speed1=fspeed()
                 send.sendContinuousValue(speed1,0,0,thetachange,0)
                 print("theta= ",thetachange)
                 print("ball ball ball",color1)
-                print('target = ',target)
+                # print('target = ',target)
                 print("move on move on move on")
                 
             if color1>=target or forward==1:
@@ -258,11 +263,11 @@ if __name__ == '__main__':
               forward=1
               
       if send.is_start == False:
+          print(send.color_mask_subject_size[0][0]+send.color_mask_subject_size[2][0])
           if strategy == True:
               send.sendBodyAuto(0,0,0,0,1,0)
               initial()
-              send.sendSensorReset()
-              send.sendHeadMotor(2,2048,100)
+              send.sendSensorReset()              
               strategy=False
       
   except rospy.ROSInterruptException:

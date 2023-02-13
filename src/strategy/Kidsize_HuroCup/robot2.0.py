@@ -15,28 +15,28 @@ mode = 1            #目標模式
 head = 2048         #頭部馬達初始角度
 speed = 4000        #前進初速度
 bspeed1 = -4000     #後退初速度
-max_speed = 6000    #前進最快速度
-min_speed = 6000    #減速最慢速度  
+max_speed = 7000    #前進最快速度
+min_speed = 7000    #減速最慢速度  
 max_bspeed = -5000  #後退最快速度
 speed_add = 200     #前進增加量
 speed_sub = 300     #前進減速量
 bspeed_add = 100    #後退增加量
 theta = 0           #副函式進退YAW值調整
 thetafix=0        #前進YAw值補償
-thetafixb=-1       #後退YAw值補償
-target = 10600       #目標面積
+thetafixb=1      #後退YAw值補償
+target = 11500       #目標面積
 
 def yaw_forward(y): #前進YAW值調整
     global yaw_hold
     global theta
-    if(y)>yaw_hold+5:
+    if(y)>yaw_hold+8:
       print("turn right")
       print(y)
-      theta=-2
-    elif(y)<yaw_hold-5:
+      theta=-1
+    elif(y)<yaw_hold-8:
       print("turn left")
       print(y)
-      theta=2
+      theta=1
     else:
       theta=0
     return theta
@@ -47,11 +47,11 @@ def yaw_backward(by): #後退YAW值調整
     if(by)>yaw_hold+8:
       print("turn left")
       print(by)
-      theta=-2
+      theta=-1
     elif(by)<yaw_hold-8:
       print("turn right")
       print(by)
-      theta=2
+      theta=1
     else:
       theta=0
     return theta 

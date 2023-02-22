@@ -17,26 +17,26 @@ speed = 3000        #前進初速度
 bspeed1 = -3000     #後退初速度
 max_speed = 4000    #前進最快速度
 min_speed = 3000    #減速最慢速度  
-max_bspeed = -4000  #後退最快速度ss
+max_bspeed = -4000  #後退最快速度
 speed_add = 200     #前進增加量
 speed_sub = 300     #前進減速量
 bspeed_add = 200    #後退增加量
 theta = 0           #副函式進退YAW值調整
 thetafix=0        #前進YAw值補償
-thetafixb=-2       #後退YAw值補償   #-3會偏左  -2微微偏右
-target = 8300       #目標面積
+thetafixb=-1       #後退YAw值補償   #-3會偏左  -2微微偏右
+target = 8500       #目標面積
 
 def yaw_forward(y): #前進YAW值調整
     global yaw_hold
     global theta
-    if(y)>yaw_hold+4:
+    if(y)>yaw_hold+2:
       if(theta>0):
         theta=0
       else:
         print("turn right")
         print(y)
         theta=-1 
-    elif(y)<yaw_hold-4:
+    elif(y)<yaw_hold-2:
       if(theta<0):
         theta=0
       else:
@@ -56,7 +56,7 @@ def yaw_backward(by): #後退YAW值調整
       else:
         print("<<<<<-----")
         print(by)
-        theta=-3
+        theta=-2
     elif(by)<yaw_hold-3:
       if(theta<0):
         theta=0
@@ -224,6 +224,7 @@ if __name__ == '__main__':
       send.drawImageFunction(2,0,0,320,120,120,0,0,0)
       send.drawImageFunction(3,1,40,280,40,200,0,0,0)
       if send.is_start == True:
+        print(send.imu_value_Yaw)
         if strategy == False:
           initial()
           send.sendHeadMotor(2,2047,50)

@@ -13,11 +13,11 @@ class SP_API:
         self.walk_status = 'First'              #走路模式
         self.mode = 2                           #目標模式 1單色球 2雙色球
         self.head = 2600                        #頭部馬達初始角度
-        self.forward_speed = 4000               #前進初速度
-        self.back_speed = -4000                 #後退初速度
-        self.max_forward_speed = 7000           #前進最快速度
-        self.min_forward_speed = 7000           #前進最慢速度  
-        self.max_back_speed = -8000             #後退最快速度
+        self.forward_speed = 7000               #前進初速度
+        self.back_speed = -7000                 #後退初速度
+        self.max_forward_speed = 10000           #前進最快速度
+        self.min_forward_speed = 10000           #前進最慢速度  
+        self.max_back_speed = -9000             #後退最快速度
         self.speed_add = 200                    #前進增加量
         self.speed_sub = 300                    #前進減速量
         self.bspeed_add = 100                   #後退增加量
@@ -25,7 +25,7 @@ class SP_API:
         self.var_theta = 0
         self.forward_theta = 0                    #前進YAw值補償
         self.back_theta = 0                      #後退YAw值補償
-        self.target = 10000                      #目標面積
+        self.target = 9000                      #目標面積
         self.redmax = 2.0                       #1.15單色球
         self.redmin = 1.5                       #0.85單色球
         self.RedObject=np.array([0,0,0,0,0])    #紅色目標物[xmax xmin ymax ymin size]
@@ -40,8 +40,8 @@ class SP_API:
         self.print_target = ''        
     def initial(self):
         self.walk_status = 'First'
-        self.forward_speed = 4000        
-        self.back_speed = -4000     
+        self.forward_speed = 7000        
+        self.back_speed = -7000     
         self.head = 2600
         self.yaw_start=0
         self.theta=0
@@ -69,7 +69,7 @@ sp = SP_API()
 def forward_control(): #前進YAW值調整
     if sp.yaw_start > 8:
         sp.print_theta = '==========>'
-        sp.theta = -2 
+        sp.theta = -3 
     elif sp.yaw_start < -8:
         sp.print_theta = '<========='
         sp.theta = 2

@@ -25,7 +25,6 @@ theta = 0           #副函式進退YAW值調整
 thetafix=1       #前進YAw值補償
 thetafixb=-1      #後退YAw值補償   #-3會偏左  -2微微偏右
 target = 5000       #目標面積
-
 def yaw_forward(y): #前進YAW值調整
     global yaw_hold
     global theta
@@ -204,7 +203,7 @@ def initial():    #初始化
   min_speed=5000
   speed1=0
   bspeed=0
-  bspeed1=-4000
+  bspeed1=-3000
   headangle=0
   forward=0
   yaw_hold=0

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-#coding=utf-8
+#coding=utf-8 
 
 import rospy
 import numpy as np
@@ -13,30 +13,36 @@ strategy = False    #第一次指撥flag
 forward = 0         #前進flag
 mode = 1            #目標模式
 head = 2047         #頭部馬達初始角度
-speed = 4000        #前進初速度
+speed = 7000        #前進初速度
 bspeed1 = -4000     #後退初速度
-max_speed = 4000    #前進最快速度
-min_speed = 3000    #減速最慢速度  
-max_bspeed = -4000  #後退最快速度
+max_speed = 9000    #前進最快速度
+min_speed = -4000    #減速最慢速度  
+max_bspeed = -7000  #後退最快速度
 speed_add = 200     #前進增加量
 speed_sub = 300     #前進減速量
 bspeed_add = 200    #後退增加量
 theta = 0           #副函式進退YAW值調整
-thetafix=0        #前進YAw值補償
-thetafixb=0       #後退YAw值補償
-target = 8500       #目標面積
+thetafix=1       #前進YAw值補償
+thetafixb=-1      #後退YAw值補償   #-3會偏左  -2微微偏右
+target = 5000       #目標面積
 
 def yaw_forward(y): #前進YAW值調整
     global yaw_hold
     global theta
     if(y)>yaw_hold+3:
-      print("turn right")
-      print(y)
-      theta=-2 
+      if(theta>0):
+        theta=0
+      else:
+        print("turn right")
+        print(y)
+        theta=-1
     elif(y)<yaw_hold-3:
-      print("turn left")
-      print(y)
-      theta=2
+      if(theta<0):
+        theta=0
+      else:
+        print("turn left")
+        print(y)
+        theta=1
     else:
       theta=0
     return theta
@@ -45,13 +51,19 @@ def yaw_backward(by): #後退YAW值調整
     global yaw_hold
     global theta
     if(by)>yaw_hold+3:
-      print("turn left")
-      print(by)
-      theta=-2
+      if(theta>0):
+        theta=0
+      else:
+        print("<<<<<-----")
+        print(by)
+        theta=-2
     elif(by)<yaw_hold-3:
-      print("turn right")
-      print(by)
-      theta=2
+      if(theta<0):
+        theta=0
+      else:
+        print("----->>>>>")
+        print(by)
+        theta=2
     else:
       theta=0
     return theta 
@@ -64,9 +76,6 @@ def colored():   #紅色球面積
   global objymin
   global objymax
   global objsize
-  send.drawImageFunction(1,0,160,160,0,240,0,0,0)
-  send.drawImageFunction(2,0,0,320,120,120,0,0,0)
-  send.drawImageFunction(3,1,40,280,40,200,0,0,0)
   if mode==0:
     redmin=0.85
     redmax=1.15
@@ -130,7 +139,7 @@ def total(zx,zy):    #紅籃球總面積
   if objxmaxblue>objxmax and objxminblue>objxmin and 0.8<(objymax-objymin)/(objxmaxblue-objxmin)<1.2: 
       get_target=True
       ballsize=zx+zy
-      print("sofjadopgjasopgsag")
+      print("-----")
       return ballsize
   else:
       get_target=False
@@ -191,8 +200,8 @@ def initial():    #初始化
   head=2047
   yaw_start=0
   color1=100
-  speed=4000
-  min_speed=3000
+  speed=7000
+  min_speed=5000
   speed1=0
   bspeed=0
   bspeed1=-4000
@@ -211,9 +220,14 @@ if __name__ == '__main__':
   try:
     send = Sendmessage()
     while not rospy.is_shutdown():
+      send.drawImageFunction(1,0,160,160,0,240,0,0,0)
+      send.drawImageFunction(2,0,0,320,120,120,0,0,0)
+      send.drawImageFunction(3,1,40,280,40,200,0,0,0)
       if send.is_start == True:
+        print(send.imu_value_Yaw)
         if strategy == False:
           initial()
+          send.sendHeadMotor(2,2047,50)
           send.sendSensorReset()
           send.sendBodyAuto(0,0,0,0,1,0)
           yaw_hold=send.imu_value_Yaw
@@ -239,7 +253,7 @@ if __name__ == '__main__':
               elif red_size==None and blue_size==None:
                 red_size=500
                 blue_size=500   
-                print("both nothing nothing nothing nothing ") 
+                print("ball size ") 
               color1=total(red_size,blue_size)
 
             if forward==0:
@@ -271,6 +285,9 @@ if __name__ == '__main__':
             initial()
             send.sendHeadMotor(2,2047,100)
             strategy=False
+            time.sleep(0.1)
+            send.sendBodySector(999)
+            time.sleep(0.1)
       
   except rospy.ROSInterruptException:
         pass

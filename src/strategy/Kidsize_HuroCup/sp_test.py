@@ -13,9 +13,9 @@ class SP_API:
         self.walk_status = 'First'                      #走路狀態
         self.head = 2600                                #頭部馬達角度
         self.speed = 6000                               #初速度
-        self.back_speed = -6000                         #後退初速度
-        self.max_forward_speed = 7000                   #前進最快速度  
-        self.max_back_speed = -9000                     #後退最快速度
+        self.back_speed = -4000                         #後退初速度
+        self.max_forward_speed = 9000                   #前進最快速度  
+        self.max_back_speed = -7000                     #後退最快速度
         self.speed_add = 200                            #前進增加量
         self.bspeed_add = 100                           #後退增加量
         self.theta = 0                                  #旋轉量
@@ -33,7 +33,7 @@ class SP_API:
     def initial(self):
         self.walk_status = 'First'
         sp.speed = 6000       
-        self.back_speed = -6000     
+        self.back_speed = -4000     
         self.head = 2600
         self.yaw = 0
         self.theta = 0

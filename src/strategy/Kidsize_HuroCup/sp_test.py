@@ -26,7 +26,7 @@ class SP_API:
         self.Left_Object=np.array([0,0,0,0,0,0,0])      #紅色目標物[xmax xmin ymax ymin size X Y]
         self.Right_Object=np.array([0,0,0,0,0,0,0])     #藍色目標物[xmax xmin ymax ymin size x Y]
         self.Object=np.array([0,0,0])                   #目標物[X Y size]
-        self.yaw = 0                                      #Yaw值
+        self.yaw = 0                                    #Yaw值
         self.start = 0
         self.end = 0
         self.FPS = 0

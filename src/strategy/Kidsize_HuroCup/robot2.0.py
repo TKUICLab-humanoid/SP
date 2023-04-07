@@ -13,16 +13,16 @@ strategy = False    #第一次指撥flag
 forward = 0         #前進flag
 mode = 1            #目標模式
 head = 2047         #頭部馬達初始角度
-speed = 7000        #前進初速度
-bspeed1 = -4000     #後退初速度
-max_speed = 9000    #前進最快速度
-min_speed = -4000    #減速最慢速度  
-max_bspeed = -7000  #後退最快速度
+speed = 10000        #前進初速度
+bspeed1 = -5000     #後退初速度
+max_speed = 10000    #前進最快速度
+min_speed = 5000    #減速最慢速度  
+max_bspeed = -10000  #後退最快速度
 speed_add = 200     #前進增加量
 speed_sub = 300     #前進減速量
 bspeed_add = 200    #後退增加量
 theta = 0           #副函式進退YAW值調整
-thetafix=1       #前進YAw值補償
+thetafix=-1      #前進YAw值補償
 thetafixb=-1      #後退YAw值補償   #-3會偏左  -2微微偏右
 target = 5000       #目標面積
 def yaw_forward(y): #前進YAW值調整
@@ -49,14 +49,14 @@ def yaw_forward(y): #前進YAW值調整
 def yaw_backward(by): #後退YAW值調整
     global yaw_hold
     global theta
-    if(by)>yaw_hold+3:
+    if(by)>yaw_hold-3:
       if(theta>0):
         theta=0
       else:
         print("<<<<<-----")
         print(by)
         theta=-2
-    elif(by)<yaw_hold-3:
+    elif(by)<yaw_hold-9:
       if(theta<0):
         theta=0
       else:
@@ -199,11 +199,11 @@ def initial():    #初始化
   head=2047
   yaw_start=0
   color1=100
-  speed=7000
+  speed=10000
   min_speed=5000
   speed1=0
   bspeed=0
-  bspeed1=-3000
+  bspeed1=-5000
   headangle=0
   forward=0
   yaw_hold=0
@@ -221,7 +221,7 @@ if __name__ == '__main__':
     while not rospy.is_shutdown():
       send.drawImageFunction(1,0,160,160,0,240,0,0,0)
       send.drawImageFunction(2,0,0,320,120,120,0,0,0)
-      send.drawImageFunction(3,1,40,280,40,200,0,0,0)
+      send.drawImageFunction(3,1,40,280,40,200,0,0,0)      
       if send.is_start == True:
         print(send.imu_value_Yaw)
         if strategy == False:
@@ -229,8 +229,8 @@ if __name__ == '__main__':
           send.sendHeadMotor(2,2047,50)
           send.sendSensorReset()
           send.sendBodyAuto(0,0,0,0,1,0)
-          yaw_hold=send.imu_value_Yaw
           time.sleep(0.1)
+          yaw_hold=send.imu_value_Yaw          
           mode=1 #choice mode 0 one color 1 two color
           strategy=True
         else:
@@ -276,9 +276,11 @@ if __name__ == '__main__':
               print('thetachange2 = ',thetachange2)
               print("go back go back go back")
               forward=1
+        print(yaw_hold)
       if send.is_start == False:
         # print('go')
-        print(send.color_mask_subject_size[0][0]+send.color_mask_subject_size[2][0])
+        print(send.color_mask_subject_size[0][0]+send.color_mask_subject_size[2][0])        
+        # send.sendSensorReset()
         if strategy == True:
             send.sendBodyAuto(0,0,0,0,1,0)
             initial()

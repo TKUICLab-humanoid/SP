@@ -19,7 +19,7 @@ class Walk_API:
         self.Speed = 5000
         self.Theta = 0
         self.Speed_Max = 10000
-        self.Speed_Min = -10000
+        self.Speed_Min = -6000
         self.Control_Start = 0
         self.Now_Time = 0
         send.sendSensorReset()

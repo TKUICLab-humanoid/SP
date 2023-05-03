@@ -11,8 +11,9 @@ FORWARD_MIN_SPEED = 6000
 BACK_MAX_SPEED = -10000
 FORWARD_ORIGIN_THETA = 0
 BACK_ORIGIN_THETA = 0
-TARGET_Y = 120
+TARGET_Y = 130
 OBJECT_MIN_SIZE = 1000
+DELAY_TIME = 0.5
 COLOR_DICT = {  'Orange': 0,
                 'Yellow': 1,
                 'Blue':   2,
@@ -26,8 +27,8 @@ aaaa = rospy.init_node('talker', anonymous=True, log_level=rospy.INFO)
 
 class Sprint:
     def __init__(self):
-        self.left_object_color = COLOR_DICT['Orange']
-        self.right_object_color = COLOR_DICT['Blue']
+        self.left_object_color = COLOR_DICT['Blue']
+        self.right_object_color = COLOR_DICT['Orange']
         self.init()
 
     def init(self):
@@ -72,17 +73,15 @@ class Sprint:
             self.theta = FORWARD_ORIGIN_THETA
         else:
             self.theta = -2 + FORWARD_ORIGIN_THETA if self.yaw > 0 else 2 + FORWARD_ORIGIN_THETA
-        self.speed += self.speed_add
-        self.speed = max(FORWARD_MIN_SPEED, self.speed)
+        self.speed = max(FORWARD_MIN_SPEED, self.speed + self.speed_add)
         
     def back_control(self): #後退控制
         if -8 <= self.yaw <= 8:
             self.theta = FORWARD_ORIGIN_THETA
         else:
             self.theta = -2 + FORWARD_ORIGIN_THETA if self.yaw > 0 else 2 + FORWARD_ORIGIN_THETA
-        if time.time() - self.speed_add_delay >= 0.1: 
-            self.speed += self.speed_add
-            self.speed = max(BACK_MAX_SPEED, self.speed)
+        if time.time() - self.speed_add_delay >= 0.1 : 
+            self.speed = max(BACK_MAX_SPEED, self.speed + self.speed_add)
             self.speed_add_delay = time.time()        
         
     def find_target(self):  #找目標物     
@@ -99,7 +98,7 @@ class Sprint:
             if target_y >= TARGET_Y:
                 self.speed = BACK_START_SPEED
                 self.walk_status = 'Back'
-                self.speed_add_delay = time.time()       
+                self.speed_add_delay = time.time() - DELAY_TIME
 
     def get_object(self, color, cnt, r, g, b):
         max_object = max(send.color_mask_subject_size[color])

@@ -42,7 +42,6 @@ class Sendmessage:
         self.DIOValue = 0x00
         self.is_start = False
         self.time = 0
-        aaaa = rospy.init_node('talker', anonymous=True)
         object_list_sub = rospy.Subscriber("/Object/List",ObjectList, self.getObject)
         label_model_sub = rospy.Subscriber("/LabelModel/List",LabelModelObjectList, self.getLabelModel)
         #compress_image_sub = rospy.Subscriber("compress_image",Image, self.catchImage)
@@ -145,6 +144,16 @@ class Sendmessage:
         self.Label_Model = msg.LabelModel    
     def getObject(self,msg):
         time_start = time.time()
+        self.color_mask_subject_cnts = [0 for i in range(8)]
+        self.color_mask_subject_X = [[0]*320 for i in range(8)]
+        self.color_mask_subject_Y = [[0]*320 for i in range(8)]
+        self.color_mask_subject_XMin = [[0]*320 for i in range(8)]
+        self.color_mask_subject_XMax = [[0]*320 for i in range(8)]
+        self.color_mask_subject_YMax = [[0]*320 for i in range(8)]
+        self.color_mask_subject_YMin = [[0]*320 for i in range(8)]
+        self.color_mask_subject_Width = [[0]*320 for i in range(8)]
+        self.color_mask_subject_Height = [[0]*320 for i in range(8)]
+        self.color_mask_subject_size = [[0]*320 for i in range(8)]
         for i in range (8):
             self.color_mask_subject_cnts[i] = msg.Objectlist[i].cnt
             for j in range (self.color_mask_subject_cnts[i]):

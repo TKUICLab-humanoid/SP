@@ -40,7 +40,7 @@ class Sprint:
         self.yaw = 0
         send.sendHeadMotor(1, 2048, 50)
         send.sendHeadMotor(2, 2600, 50)
-        send.sendSensorReset()
+        send.sendSensorReset(1,1,1)
 
     def main(self):
         if send.is_start:            

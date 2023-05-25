@@ -7,23 +7,23 @@ from Python_API import Sendmessage
 import time                       
 
 DICT_COLOR = {'Orange':0, 'Yellow':1, 'Blue':2, 'Green':3,'Black':4, 'Red':5, 'White':6}  #字典存放所有顏色
-BALL_COLOR = DICT_COLOR['Orange']         #單色模       字典[顏色名稱: 橘色(更改此顏色名稱就能改建模使用)]
 LEFT_BALL_COLOR = DICT_COLOR['Orange']    #雙色模 左邊  字典[顏色名稱: 橘色(更改此顏色名稱就能改建模使用)]
 RIGHT_BALL_COLOR = DICT_COLOR['Blue']     #雙色模 右邊  字典[顏色名稱: 藍色(更改此顏色名稱就能改建模使用)]
 
-SPEED_MAX_FORWARD = 6000    #前進最快速度                                #原MAX_SPEED
-SPEED_MIN_FORWARD = 5000   #前進最慢速度  (如果判定面積沒改就不會用到)   #原MIN_SPEED
+SPEED_MAX_FORWARD = 6500    #前進最快速度                                #原MAX_SPEED
+SPEED_MIN_FORWARD = 4000   #前進減速速度  （在球前）                          #原MIN_SPEED
 SPEED_MAX_BACK = -5500      #後退最快速度                                #原MAX_BSPEED
 SPEED_SUB_FORWARD = 100     #前進減速量                                  #原SPEED_SUB
 SPEED_ADD_BACK = 200        #後退增加量                                  #原BSPEED_ADD
-THETA_FIX_FORWARD = 2       #前進YAw值補償                               #原THETAFIX
+THETA_FIX_FORWARD = 0       #前進YAw值補償                               #原THETAFIX
 THETA_FIX_BACK = -3         #後退YAw值補償    #-3會偏左  -2微微偏右       #原THETAFIXB
-BALL_FRONT_SIZE = 6200      #預測目標面積                                #原TARGET
-BALL_SUB_SIZE = 2500
-TWO_COLOR_FLAG = True       # 
+BALL_FRONT_SIZE = 5000      #預測目標面積                                #原TARGET
+BALL_SUB_SIZE = 1500
+TWO_COLOR_FLAG = True       #T 雙色球  F單色球 （ 只需要改此即可使用單雙色）
 HEAD_Y_MAX = 1900
 HEAD_Y_MIN = 1300 
-BUFFER_TIME = 1             #緩衝時間    
+BUFFER_TIME = 2                     #緩衝時間    
+HEAD_UPDATE_TIME = 0.1 #3畫面更新率 
 send = Sendmessage()
 api_need_delet = rospy.init_node('talker', anonymous = True, log_level = rospy.INFO)
 
@@ -35,7 +35,7 @@ class Sprint:
 
   def initial(self):    #初始化                                                           
     self.forward_speed = SPEED_MAX_FORWARD         #原speed                         #前進速度                   (會拿來加上減速量所以會變動) (如果只改 MAX值可以覆蓋 此值 )             
-    self.speed_back = -5000           #原bspeed                        #後退速度                   (會拿來加上增速量所以會變動)
+    self.speed_back = -3000           #原bspeed                        #後退速度                   (會拿來加上增速量所以會變動)
     self.back_flag = False            #原forward                       #前進與後退的flag                  (0,1變動)
     self.head_y = HEAD_Y_MAX                                                   #頭部馬達角度               (2047,1800,1300變動)
     self.theta_initial = 0            #原theta                         #副函式進退YAW值調整        (2,1,0,-1,-2)
@@ -43,13 +43,8 @@ class Sprint:
     self.theta_fixed_back = 0         #原thetachange2                  #加上修正值後 用來輸出後退的theta值
     self.ball_size = 100              #原color1     #偵測目標面積 初始值為零 可能會以為是沒有讀取到數值 進而預設給1000面積 並且顯示沒抓取到某個球
     self.now_yaw = 0                  #原yaw_start                     #初始Yaw值
-    self.one_size = 0                                                  #單色球面積
     self.left_size = 0                                                 #紅球面積 原red_size
     self.right_size = 0                                                #藍球面積 原blue_size
-    self.one_line_xmin = 0            #單色球X最小值線
-    self.one_line_xmax = 0            #單色球X最大值線                        
-    self.one_line_ymin = 0            #單色球Y最小值線
-    self.one_line_ymax = 0            #單色球Y最大值線
     self.left_line_xmin = 0            #原objxmin
     self.left_line_xmax = 0            #原objxmax                        
     self.left_line_ymin = 0            #原objymin
@@ -62,13 +57,13 @@ class Sprint:
     self.control_time = 0
 
   def forward_control(self):     #前進YAW值調整                                      
-    if(self.now_yaw > 6):          #需要修改y名稱                            
+    if(self.now_yaw > 5):          #需要修改y名稱                            
       if(self.theta_initial > 0):
         self.theta_initial = 0
       else:
         rospy.logdebug(f'turn right ') 
-        self.theta_initial = -2
-    elif (self.now_yaw < -4):           #
+        self.theta_initial = -1
+    elif (self.now_yaw < -5):           #
       if(self.theta_initial < 0):
         self.theta_initial = 0
       else:
@@ -84,13 +79,13 @@ class Sprint:
     rospy.logdebug(f'theta = {self.theta_initial}, speed = {self.forward_speed}')
       
   def back_control(self):    #後退YAW值調整                                       
-    if(self.now_yaw > 2):             #需要修改self.now_yaw名稱                           
+    if(self.now_yaw > 1):             #需要修改self.now_yaw名稱                           
       if(self.theta_initial > 0):
         self.theta_initial = 0
       else:
         rospy.logdebug(f'<<<<<----- ')
         self.theta_initial = -2
-    elif(self.now_yaw < -4):
+    elif(self.now_yaw < -5):
       if(self.theta_initial < 0):
         self.theta_initial = 0
       else:
@@ -104,23 +99,6 @@ class Sprint:
       self.speed_back = max(SPEED_MAX_BACK, self.speed_back)
     
     rospy.logdebug(f'theta = {self.theta_initial}, speed = {self.speed_back}')
-
-  def get_one_size(self):    #單一色球面積
-    one_size_matrix = []                                                                    
-    size_min = 0.85
-    size_max = 1.15
-    for j in range (send.color_mask_subject_cnts[BALL_COLOR]):
-      if size_min < (send.color_mask_subject_YMax[BALL_COLOR][j] - send.color_mask_subject_YMin[BALL_COLOR][j]) / (send.color_mask_subject_XMax[BALL_COLOR][j] - send.color_mask_subject_XMin[BALL_COLOR][j]) < size_max:
-        self.one_line_xmin = send.color_mask_subject_XMin[BALL_COLOR][j]
-        self.one_line_xmax = send.color_mask_subject_XMax[BALL_COLOR][j]
-        self.one_line_ymin = send.color_mask_subject_YMin[BALL_COLOR][j]
-        self.one_line_ymax = send.color_mask_subject_YMax[BALL_COLOR][j]  
-        send.drawImageFunction(4, 1, self.one_line_xmin , self.one_line_xmax , self.one_line_ymin , self.one_line_ymax, 50, 205, 50)  
-        if send.color_mask_subject_size[BALL_COLOR][j] > 100:           
-          one_size_matrix.append(send.color_mask_subject_size[BALL_COLOR][j])  
-          self.one_size = max(one_size_matrix)
-        else:
-          self.one_size = send.color_mask_subject_size[BALL_COLOR][j]
 
   def get_left_size(self, left_size_min, left_size_max):   #紅色球面積                                                                     
     left_size_matrix = []    #原beat 
@@ -213,14 +191,14 @@ class Sprint:
             self.ball_size_total()                      #輸出到ball_size  拿掉不必要的變數
           rospy.logdebug(f'gettarget = {self.get_target_flag}')
           if self.get_target_flag:
-            if time.time() - self.control_time > 0.1:
+            if time.time() - self.control_time  >  HEAD_UPDATE_TIME:
               self.move_head()
               self.control_time = time.time()
           send.sendHeadMotor(2, round(self.head_y), 50)
           time.sleep(0.01) 
           rospy.logdebug(f'Head = {self.head_y}')
           self.forward_control()
-          time.sleep(0.05)
+          time.sleep(0.02)
           send.sendContinuousValue(self.forward_speed, 0, 0, self.theta_initial + THETA_FIX_FORWARD, 0)
           rospy.logdebug(f'Detection size = {self.ball_size}') 
           rospy.logdebug(f'move on move on move on')
@@ -246,7 +224,7 @@ class Sprint:
 if __name__ == '__main__':
   try:
     program = Sprint()                           
-    r = rospy.Rate(20)                     #更新率 範圍限制 20~30
+    r = rospy.Rate(30)                     #更新率 範圍限制 20~30
     while not rospy.is_shutdown(): 
       program.main()                      
       r.sleep()

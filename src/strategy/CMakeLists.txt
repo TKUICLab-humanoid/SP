@@ -30,10 +30,10 @@ set(STRATEGYBASE_LIBRARIES ${CATKIN_DEVEL_PREFIX}/lib/libstrategybase.so)
 #add_message_files(DIRECTORY msg
 #	FILES
 #)
-add_message_files(DIRECTORY msg
-FILES quickchange.msg
-      aruco_matrix.msg
-)
+# add_message_files(DIRECTORY msg
+# FILES quickchange.msg
+#       aruco_matrix.msg
+# )
 ## Generate services in the 'srv' folder
 #add_service_files(DIRECTORY srv 
 #	FILES
@@ -54,20 +54,20 @@ catkin_package(CATKIN_DEPENDS
 # roscpp
 )
 
-include_directories(
-  include
-  ${catkin_INCLUDE_DIRS}  
-)
+# include_directories(
+#   include
+#   ${catkin_INCLUDE_DIRS}  
+# )
 
 
 #install(TARGETS testing RUNTIME DESTINATION bin)
-add_executable(strategy Kidsize_HuroCup/strategy_main.cpp
-			Kidsize_HuroCup/TSprintinfo.cpp
-)
-add_dependencies(strategy ${catkin_EXPORTED_TARGETS})
-target_link_libraries(strategy ${catkin_LIBRARIES} ${TKU_LIBRARIES} ${ROSCOMMUNICATION_LIBRARIES})
+# add_executable(strategy Kidsize_HuroCup/strategy_main.cpp
+# 			Kidsize_HuroCup/TSprintinfo.cpp
+# )
+# add_dependencies(strategy ${catkin_EXPORTED_TARGETS})
+# target_link_libraries(strategy ${catkin_LIBRARIES} ${TKU_LIBRARIES} ${ROSCOMMUNICATION_LIBRARIES})
 
-add_executable(arucoimage Kidsize_HuroCup/aruco.cpp
-)
-add_dependencies(arucoimage ${catkin_EXPORTED_TARGETS})
-target_link_libraries(arucoimage ${catkin_LIBRARIES} ${TKU_LIBRARIES} ${ROSCOMMUNICATION_LIBRARIES} ${OpenCV_LIBRARIES})
+# add_executable(arucoimage Kidsize_HuroCup/aruco.cpp
+# )
+# add_dependencies(arucoimage ${catkin_EXPORTED_TARGETS})
+# target_link_libraries(arucoimage ${catkin_LIBRARIES} ${TKU_LIBRARIES} ${ROSCOMMUNICATION_LIBRARIES} ${OpenCV_LIBRARIES})

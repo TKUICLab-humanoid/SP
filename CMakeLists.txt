@@ -38,7 +38,7 @@ set(STRATEGYBASE_LIBRARIES ${CATKIN_DEVEL_PREFIX}/lib/libstrategybase.so)
 #add_service_files(DIRECTORY srv 
 #	FILES
 #)
-add_service_files(DIRECTORY srv FILES Loadquickchange.srv)
+#add_service_files(DIRECTORY srv FILES Loadquickchange.srv)
 ## Generate actions in the 'action' folder
 # add_action_files(
 #   FILES

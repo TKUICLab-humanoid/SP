@@ -167,6 +167,16 @@ class Sendmessage:
         self.Label_Model = msg.LabelModel    
     def getObject(self,msg):
         time_start = time.time()
+        self.color_mask_subject_cnts = [0 for i in range(8)]
+        self.color_mask_subject_X = [[0]*320 for i in range(8)]
+        self.color_mask_subject_Y = [[0]*320 for i in range(8)]
+        self.color_mask_subject_XMin = [[0]*320 for i in range(8)]
+        self.color_mask_subject_XMax = [[0]*320 for i in range(8)]
+        self.color_mask_subject_YMax = [[0]*320 for i in range(8)]
+        self.color_mask_subject_YMin = [[0]*320 for i in range(8)]
+        self.color_mask_subject_Width = [[0]*320 for i in range(8)]
+        self.color_mask_subject_Height = [[0]*320 for i in range(8)]
+        self.color_mask_subject_size = [[0]*320 for i in range(8)]
         for i in range (8):
             self.color_mask_subject_cnts[i] = msg.Objectlist[i].cnt
             for j in range (self.color_mask_subject_cnts[i]):
@@ -199,4 +209,3 @@ if __name__ == '__main__':
         aa.strategy()
     except rospy.ROSInterruptException:
         pass
-

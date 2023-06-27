@@ -5,21 +5,18 @@ import numpy as np
 from Python_API import Sendmessage
 import time
 
-FORWARD_START_SPEED = 4000
-BACK_START_SPEED = -2000
-FORWARD_MAX_SPEED = 4000
-FORWARD_MIN_SPEED = 2000
-BACK_MAX_SPEED = -4000
+FORWARD_START_SPEED = 8000
+BACK_START_SPEED = -4000
+FORWARD_MAX_SPEED = 8000
+FORWARD_MIN_SPEED = 6000
+BACK_MAX_SPEED = -6000
 
 FORWARD_SPEED_ADD = 100
 FORWARD_SPEED_SUB = -100
 BACK_SPEED_ADD = -100
 
 FORWARD_ORIGIN_THETA = 0
-BACK_ORIGIN_THETA = 1
-
-HEAD_Y_HIGH = 2048
-HEAD_Y_LOW = 1500
+BACK_ORIGIN_THETA = 0
 
 class parameter:
     def __init__(self, speed, theta):
@@ -37,9 +34,9 @@ class SP():
         self.init()
 
     def status_check(self):
-        if 110 >= self.sp_ball.center.y >= 40:     #到球前減速
+        if 9000 >= self.sp_ball.size >= 6000:     #到球前減速
             return 'Decelerating'
-        elif self.sp_ball.center.y > 110:   #準備後退
+        elif self.sp_ball.size > 9000:   #準備後退
             self.backward_time = time.time()
             return 'Backward'
 
@@ -68,15 +65,12 @@ class SP():
         return speed
     
     def init(self):
-        self.head_y = 1400
         self.sp_ball.size = 0
         self.forward.speed = FORWARD_START_SPEED
         self.backward.speed = BACK_START_SPEED
         self.tku_ros_api.sendHeadMotor(1, 2048, 50)
         self.tku_ros_api.sendHeadMotor(2, 1400, 50)
         self.tku_ros_api.sendSensorReset(1, 1, 1)
-        self.tku_ros_api.drawImageFunction(1, 1, 0, 0, 0 ,0, 0, 0, 255)
-        self.tku_ros_api.drawImageFunction(2, 1, 0, 0, 0, 0, 255, 0, 0)
         time.sleep(0.01)
 
 def main():
@@ -95,17 +89,18 @@ def main():
             sp.sp_ball.find()
 
             if walk_status == 'Forward':
-                walk_status = sp.status_check()
                 sp.angle_control(-2, 2, 0, FORWARD_ORIGIN_THETA)
                 sp.forward.speed = sp.speed_control(sp.forward.speed, FORWARD_SPEED_ADD, FORWARD_MAX_SPEED, walk_status)
                 send.sendContinuousValue(sp.forward.speed,0,0,sp.theta,0)
-            elif walk_status == 'Decelerating':
                 walk_status = sp.status_check()
+            elif walk_status == 'Decelerating':
                 sp.angle_control(-2, 2, 0, FORWARD_ORIGIN_THETA)
                 sp.forward.speed = sp.speed_control(sp.forward.speed, FORWARD_SPEED_SUB, FORWARD_MIN_SPEED, walk_status)  
-                send.sendContinuousValue(sp.forward.speed,0,0,sp.theta,0)              
+                send.sendContinuousValue(sp.forward.speed,0,0,sp.theta,0)  
+                walk_status = sp.status_check()            
             else:
                 sp.angle_control(-2, 2, 0, BACK_ORIGIN_THETA)
+                # sp.backward.speed = sp.speed_control(sp.backward.speed, BACK_SPEED_ADD, BACK_MAX_SPEED, walk_status)
                 if time.time() - sp.backward_time > 1.5:
                     sp.backward.speed = sp.speed_control(sp.backward.speed, BACK_SPEED_ADD, BACK_MAX_SPEED, walk_status)
                 else:
@@ -151,17 +146,18 @@ class SprintBall:
         self.center = Coordinate(0, 0)
 
     def find(self):
-
+        self.tku_ros_api.drawImageFunction(1, 1, 0, 0, 0 ,0, 0, 0, 255)
+        self.tku_ros_api.drawImageFunction(2, 1, 0, 0, 0, 0, 255, 0, 0)
         find_left = self.left_side.update()
         find_right = self.right_side.update()
         rospy.loginfo(f'find_left = {find_left}, find_right = {find_right}')
         if find_left and find_right:
-            rospy.loginfo(f'left_side.center.y = {self.left_side.center.y}, right_side.center.y = {self.right_side.center.y}')
-            # rospy.loginfo(f'left_side.size = {self.left_side.size}, right_side.size = {self.right_side.size}')
+            # rospy.loginfo(f'left_side.center.y = {self.left_side.center.y}, right_side.center.y = {self.right_side.center.y}')
+            rospy.loginfo(f'left_side.size = {self.left_side.size}, right_side.size = {self.right_side.size}')
             
             center_diff = abs(self.left_side.center - self.right_side.center)
             
-            if center_diff.y < 5 and (self.left_side.edge_min < self.right_side.edge_min) \
+            if center_diff.y <= 5 and (self.left_side.edge_min < self.right_side.edge_min) \
                 and (self.left_side.edge_max < self.right_side.edge_max):
 
                 self.tku_ros_api.drawImageFunction(1, 1, *self.left_side.boundary_box, 0, 0, 255)
@@ -169,10 +165,9 @@ class SprintBall:
                 self.size = self.left_side.size + self.right_side.size
                 self.center = (self.left_side.center + self.right_side.center) / 2
                 rospy.logdebug(f'ball.center = {self.center.x, self.center.y}')
+                rospy.logdebug(f'ball.size = {self.size}')
 
                 return True
-        # self.size = 0
-        # center_diff = 0
         return False
 
 class ObjectInfo:

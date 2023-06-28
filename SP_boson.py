@@ -2,20 +2,22 @@
 #coding=utf-8
 import rospy
 import numpy as np
+import sys
+sys.path.append('/home/iclab/Desktop/kid_hurocup/src/strategy')
 from Python_API import Sendmessage
 import time
 
-FORWARD_START_SPEED = 7000
-BACK_START_SPEED = -5000
-FORWARD_MAX_SPEED = 7000
-FORWARD_MIN_SPEED = 6000
-BACK_MAX_SPEED = -7000
+FORWARD_START_SPEED = 8000
+BACK_START_SPEED = -6000
+FORWARD_MAX_SPEED = 8000
+FORWARD_MIN_SPEED = 5000
+BACK_MAX_SPEED = -6000
 
 FORWARD_SPEED_ADD = 100
-FORWARD_SPEED_SUB = -100
+FORWARD_SPEED_SUB = -500
 BACK_SPEED_ADD = -100
 
-FORWARD_ORIGIN_THETA = 1
+FORWARD_ORIGIN_THETA = 2
 BACK_ORIGIN_THETA = 2
 
 HEAD_Y_HIGH = 2048
@@ -37,7 +39,7 @@ class SP():
 
     def status_check(self):
         print("size = ", self.sp_ball.size)
-        if 5300 >= self.sp_ball.size >= 4000:     #到球前減速
+        if 5300 >= self.sp_ball.size >= 3500:     #到球前減速
             return 'Decelerating'
         elif self.sp_ball.size > 5300:   #準備後退
             return 'Backward'
@@ -62,7 +64,7 @@ class SP():
         if yaw > 8:
             self.theta = right_theta    #右轉
             rospy.logdebug(f'Turn Right')
-        elif yaw < -8:
+        elif yaw < -5:
             self.theta = left_theta     #左轉
             rospy.logdebug(f'Turn Left')
         else:
@@ -88,17 +90,17 @@ class SP():
             rospy.logdebug(f'head_y = {self.head_y}')
     
     def init(self):
-        self.head_y = 1700
+        self.head_y = 1800
         self.sp_ball.size = 0
         self.forward.speed = FORWARD_START_SPEED
         self.backward.speed = BACK_START_SPEED
         self.tku_ros_api.sendHeadMotor(1, 2048, 50)
-        self.tku_ros_api.sendHeadMotor(2, 1700, 50)
+        self.tku_ros_api.sendHeadMotor(2, 1800, 50)
         time.sleep(0.01)
 
 
 def main():
-
+    aaaa = rospy.init_node('talker', anonymous=True, log_level=rospy.DEBUG)
     send = Sendmessage()
     r = rospy.Rate(30)
     sp = SP(send)
@@ -115,14 +117,14 @@ def main():
             sp.head_motor_update()
 
             if walk_status == 'Forward':
-                sp.angle_control(-1, 3, 0, FORWARD_ORIGIN_THETA)
+                sp.angle_control(-1, 4, 0, FORWARD_ORIGIN_THETA)
                 sp.forward.speed = sp.speed_control(sp.forward.speed, FORWARD_SPEED_ADD, FORWARD_MAX_SPEED, walk_status)
                 send.sendContinuousValue(sp.forward.speed, 0, 0, sp.theta, 0)
                 time.sleep(0.01)
                 walk_status = sp.status_check()
 
             elif walk_status == 'Decelerating':
-                sp.angle_control(-1, 3, 0, FORWARD_ORIGIN_THETA)
+                sp.angle_control(-1, 4, 0, FORWARD_ORIGIN_THETA)
                 sp.forward.speed = sp.speed_control(sp.forward.speed, FORWARD_SPEED_SUB, FORWARD_MIN_SPEED, walk_status)
                 send.sendContinuousValue(sp.forward.speed, 0, 0, sp.theta, 0)
                 time.sleep(0.01)
@@ -238,7 +240,7 @@ class ObjectInfo:
         aspect_ratio = Width / Height
 
         for idx, (size, ratio) in enumerate(zip(object_sizes, aspect_ratio)):
-            if 1000 < size < 8000 :#and 0.4 < ratio < 0.6:
+            if 500 < size < 8000 :#and 0.4 < ratio < 0.6:
                 object_idx = idx
         
         if object_idx is None:

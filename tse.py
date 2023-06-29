@@ -2,14 +2,16 @@
 #coding=utf-8
 import rospy
 import numpy as np
+import sys
+sys.path.append('/home/iclab/Desktop/adult_hurocup/src/strategy')
 from Python_API import Sendmessage
 import time
 
-FORWARD_START_SPEED = 8000
+FORWARD_START_SPEED = 4000
 BACK_START_SPEED = -4000
-FORWARD_MAX_SPEED = 8000
-FORWARD_MIN_SPEED = 6000
-BACK_MAX_SPEED = -6000
+FORWARD_MAX_SPEED = 4000
+FORWARD_MIN_SPEED = 4000
+BACK_MAX_SPEED = -4000
 
 FORWARD_SPEED_ADD = 100
 FORWARD_SPEED_SUB = -100
@@ -74,6 +76,7 @@ class SP():
         time.sleep(0.01)
 
 def main():
+    rospy.init_node('talker', anonymous=True, log_level=rospy.DEBUG)
     send = Sendmessage()
     r = rospy.Rate(30)
     sp = SP(send)
@@ -148,9 +151,14 @@ class SprintBall:
     def find(self):
         self.tku_ros_api.drawImageFunction(1, 1, 0, 0, 0 ,0, 0, 0, 255)
         self.tku_ros_api.drawImageFunction(2, 1, 0, 0, 0, 0, 255, 0, 0)
-        find_left = self.left_side.update()
-        find_right = self.right_side.update()
-        rospy.loginfo(f'find_left = {find_left}, find_right = {find_right}')
+        if self.tku_ros_api.data_check:
+            find_left = self.left_side.update()
+            find_right = self.right_side.update()
+            rospy.loginfo(f'find_left = {find_left}, find_right = {find_right}')
+            self.tku_ros_api.data_check = False
+        else:
+            find_left, find_right = False, False
+
         if find_left and find_right:
             # rospy.loginfo(f'left_side.center.y = {self.left_side.center.y}, right_side.center.y = {self.right_side.center.y}')
             rospy.loginfo(f'left_side.size = {self.left_side.size}, right_side.size = {self.right_side.size}')

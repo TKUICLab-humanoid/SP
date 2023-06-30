@@ -3,24 +3,24 @@
 import rospy
 import numpy as np
 import sys
-sys.path.append('/home/iclab/Desktop/kid_hurocup/src/strategy')
-from Python_API import Sendmessage
+# sys.path.append('/home/iclab/Desktop/kid_hurocup/src/strategy')
+from Python_APIa import Sendmessage
 import time
 
 FORWARD_START_SPEED = 8000
-BACK_START_SPEED = -6000
+BACK_START_SPEED = -3000
 FORWARD_MAX_SPEED = 8000
 FORWARD_MIN_SPEED = 5000
 BACK_MAX_SPEED = -6000
 
 FORWARD_SPEED_ADD = 100
-FORWARD_SPEED_SUB = -500
-BACK_SPEED_ADD = -100
+FORWARD_SPEED_SUB = -400
+BACK_SPEED_ADD = -50
 
-FORWARD_ORIGIN_THETA = 2
-BACK_ORIGIN_THETA = 2
+FORWARD_ORIGIN_THETA = 1
+BACK_ORIGIN_THETA = 1
 
-HEAD_Y_HIGH = 2048
+HEAD_Y_HIGH = 1800
 HEAD_Y_LOW = 1400
 
 class parameter:
@@ -51,11 +51,13 @@ class SP():
         if self.sp_ball.center.y < 110:                       #後退抬頭
             self.head_y += 20
             self.head_y = min(HEAD_Y_HIGH, self.head_y)
+            print("aa")
 
         if self.sp_ball.center.y > 130:                       #前進低頭
             self.head_y -= 20
             self.head_y = max(HEAD_Y_LOW, self.head_y)
-
+            print("bb")
+        print("head_y", self.head_y, "center", self.sp_ball.center.y)
         self.tku_ros_api.sendHeadMotor(2, self.head_y, 100)
         time.sleep(0.01)
 
@@ -117,14 +119,14 @@ def main():
             sp.head_motor_update()
 
             if walk_status == 'Forward':
-                sp.angle_control(-1, 4, 0, FORWARD_ORIGIN_THETA)
+                sp.angle_control(-1, 3, 0, FORWARD_ORIGIN_THETA)
                 sp.forward.speed = sp.speed_control(sp.forward.speed, FORWARD_SPEED_ADD, FORWARD_MAX_SPEED, walk_status)
                 send.sendContinuousValue(sp.forward.speed, 0, 0, sp.theta, 0)
                 time.sleep(0.01)
                 walk_status = sp.status_check()
 
             elif walk_status == 'Decelerating':
-                sp.angle_control(-1, 4, 0, FORWARD_ORIGIN_THETA)
+                sp.angle_control(-1, 3, 0, FORWARD_ORIGIN_THETA)
                 sp.forward.speed = sp.speed_control(sp.forward.speed, FORWARD_SPEED_SUB, FORWARD_MIN_SPEED, walk_status)
                 send.sendContinuousValue(sp.forward.speed, 0, 0, sp.theta, 0)
                 time.sleep(0.01)
@@ -190,7 +192,7 @@ class SprintBall:
             center_diff = abs(self.left_side.center - self.right_side.center)
             print("center_diff_y = ", center_diff.y)
             if center_diff.y < 5 and (self.left_side.edge_min < self.right_side.edge_min) \
-                and (self.left_side.edge_max < self.right_side.edge_max):
+                and (self.left_side.edge_max < self.right_side.edge_max):   
                 self.tku_ros_api.drawImageFunction(1, 1, *self.left_side.boundary_box, 0, 0, 255)
                 self.tku_ros_api.drawImageFunction(2, 1, *self.right_side.boundary_box, 255, 0, 0)
 
@@ -234,7 +236,6 @@ class ObjectInfo:
         Width = np.array(self.tku_ros_api.color_mask_subject_Width[self.color])
         Height = np.array(self.tku_ros_api.color_mask_subject_Height[self.color])
         object_sizes = self.tku_ros_api.color_mask_subject_size[self.color]
-
         # width = [2, 4, 8], height = [5, 9, 6]
         # width / height = [2/5, 4/9, 8/6]
         aspect_ratio = Width / Height

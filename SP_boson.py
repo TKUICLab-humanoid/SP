@@ -14,7 +14,7 @@ FORWARD_MIN_SPEED = 5000
 BACK_MAX_SPEED = -7000
 
 FORWARD_SPEED_ADD = 100
-FORWARD_SPEED_SUB = -400
+FORWARD_SPEED_SUB = -500
 BACK_SPEED_ADD = -100
 
 FORWARD_ORIGIN_THETA = 2
@@ -119,14 +119,14 @@ def main():
             sp.head_motor_update()
 
             if walk_status == 'Forward':
-                sp.angle_control(-1, 3, 1, FORWARD_ORIGIN_THETA)
+                sp.angle_control(-2, 2, 0, FORWARD_ORIGIN_THETA)
                 sp.forward.speed = sp.speed_control(sp.forward.speed, FORWARD_SPEED_ADD, FORWARD_MAX_SPEED, walk_status)
                 send.sendContinuousValue(sp.forward.speed, 0, 0, sp.theta, 0)
                 time.sleep(0.01)
                 walk_status = sp.status_check()
 
             elif walk_status == 'Decelerating':
-                sp.angle_control(-1, 3, 1, FORWARD_ORIGIN_THETA)
+                sp.angle_control(-2, 2, 0, FORWARD_ORIGIN_THETA)
                 sp.forward.speed = sp.speed_control(sp.forward.speed, FORWARD_SPEED_SUB, FORWARD_MIN_SPEED, walk_status)
                 send.sendContinuousValue(sp.forward.speed, 0, 0, sp.theta, 0)
                 time.sleep(0.01)

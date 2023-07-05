@@ -7,18 +7,18 @@ import sys
 from Python_API import Sendmessage
 import time
 
-FORWARD_START_SPEED = 8500
+FORWARD_START_SPEED = 8000
 BACK_START_SPEED = -5000
-FORWARD_MAX_SPEED = 8500
+FORWARD_MAX_SPEED = 8000
 FORWARD_MIN_SPEED = 5000
 BACK_MAX_SPEED = -7000
 
 FORWARD_SPEED_ADD = 100
-FORWARD_SPEED_SUB = -500
+FORWARD_SPEED_SUB = -300
 BACK_SPEED_ADD = -100
 
-FORWARD_ORIGIN_THETA = 2
-BACK_ORIGIN_THETA = 1
+FORWARD_ORIGIN_THETA = 1
+BACK_ORIGIN_THETA = 2
 
 HEAD_Y_HIGH = 1800
 HEAD_Y_LOW = 1400
@@ -66,7 +66,7 @@ class SP():
         if yaw > 5:
             self.theta = right_theta    #右轉
             rospy.logdebug(f'Turn Right')
-        elif yaw < -3:
+        elif yaw < -5:
             self.theta = left_theta     #左轉
             rospy.logdebug(f'Turn Left')
         else:
@@ -134,7 +134,7 @@ def main():
 
             else:
                 print("size = ", sp.sp_ball.size)
-                sp.angle_control(-2, 2, 1, BACK_ORIGIN_THETA)
+                sp.angle_control(-4, 2, 0, BACK_ORIGIN_THETA)
                 sp.backward.speed = sp.speed_control(sp.backward.speed, BACK_SPEED_ADD, BACK_MAX_SPEED, walk_status)
                 send.sendContinuousValue(sp.backward.speed, 0, 0, sp.theta, 0)
                 time.sleep(0.01)

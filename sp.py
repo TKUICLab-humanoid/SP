@@ -8,15 +8,15 @@ import time
 FORWARD_START_SPEED = 8000
 BACK_START_SPEED = -4000
 FORWARD_MAX_SPEED = 8000
-FORWARD_MIN_SPEED = 6000
-BACK_MAX_SPEED = -5000
+FORWARD_MIN_SPEED = 4000
+BACK_MAX_SPEED = -7000
 
 FORWARD_SPEED_ADD = 100
 FORWARD_SPEED_SUB = -100
 BACK_SPEED_ADD = -100
 
-FORWARD_ORIGIN_THETA = 0
-BACK_ORIGIN_THETA = 0
+FORWARD_ORIGIN_THETA = -1
+BACK_ORIGIN_THETA = 1
 
 class parameter:
     def __init__(self, speed, theta):
@@ -34,9 +34,9 @@ class SP():
         self.init()
 
     def status_check(self):
-        if 9000 >= self.sp_ball.size >= 6000:     #到球前減速
+        if 11000 >= self.sp_ball.size >= 7000:     #到球前減速
             return 'Decelerating'
-        elif self.sp_ball.size > 9000:   #準備後退
+        elif self.sp_ball.size > 11000:   #準備後退
             self.backward_time = time.time()
             return 'Backward'
 
@@ -101,20 +101,21 @@ def main():
                 walk_status = sp.status_check()            
             else:
                 sp.angle_control(-2, 2, 0, BACK_ORIGIN_THETA)
-                # sp.backward.speed = sp.speed_control(sp.backward.speed, BACK_SPEED_ADD, BACK_MAX_SPEED, walk_status)
-                if time.time() - sp.backward_time > 1.5:
-                    sp.backward.speed = sp.speed_control(sp.backward.speed, BACK_SPEED_ADD, BACK_MAX_SPEED, walk_status)
-                else:
-                    sp.backward.speed = sp.speed_control(sp.backward.speed, 0, BACK_MAX_SPEED, walk_status)
+                sp.backward.speed = sp.speed_control(sp.backward.speed, BACK_SPEED_ADD, BACK_MAX_SPEED, walk_status)
+                # if time.time() - sp.backward_time > 1.5:
+                #     sp.backward.speed = sp.speed_control(sp.backward.speed, BACK_SPEED_ADD, BACK_MAX_SPEED, walk_status)
+                # else:
+                #     sp.backward.speed = sp.speed_control(sp.backward.speed, 0, BACK_MAX_SPEED, walk_status)
                 send.sendContinuousValue(sp.backward.speed,0,0,sp.theta,0)
 
             rospy.loginfo(f'walk_status = {walk_status}')
         else:
             if not first_in:
-                walk_status = 'Forward'
-                sp.init()
                 send.sendBodyAuto(0, 0, 0, 0, 1, 0)
-                first_in = True
+                
+            walk_status = 'Forward'
+            sp.init()
+            first_in = True
 
         r.sleep()
 

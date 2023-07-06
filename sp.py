@@ -9,13 +9,13 @@ FORWARD_START_SPEED = 8000
 BACK_START_SPEED = -4000
 FORWARD_MAX_SPEED = 8000
 FORWARD_MIN_SPEED = 4000
-BACK_MAX_SPEED = -7000
+BACK_MAX_SPEED = -6500
 
 FORWARD_SPEED_ADD = 100
 FORWARD_SPEED_SUB = -100
 BACK_SPEED_ADD = -100
 
-FORWARD_ORIGIN_THETA = -1
+FORWARD_ORIGIN_THETA = 0
 BACK_ORIGIN_THETA = 1
 
 class parameter:
@@ -34,9 +34,9 @@ class SP():
         self.init()
 
     def status_check(self):
-        if 11000 >= self.sp_ball.size >= 7000:     #到球前減速
+        if 10500 >= self.sp_ball.size >= 7000:     #到球前減速
             return 'Decelerating'
-        elif self.sp_ball.size > 11000:   #準備後退
+        elif self.sp_ball.size > 10500:   #準備後退
             self.backward_time = time.time()
             return 'Backward'
 
@@ -44,14 +44,16 @@ class SP():
 
     def angle_control(self, right_theta, left_theta, straight_theta, original_theta):
         yaw = self.tku_ros_api.imu_value_Yaw
-        if yaw > 8:
+        if yaw >= 5:
             self.theta = right_theta    #右轉
-        elif yaw < -8:
+        elif yaw <= -5:
             self.theta = left_theta     #左轉
         else:
             self.theta = straight_theta     #直走
         self.theta += original_theta
-        rospy.logdebug(f'theta = {self.theta}')
+
+        rospy.logdebug(f'yaw = {yaw}')
+        # rospy.logdebug(f'theta = {self.theta}')
 
     def speed_control(self, speed, speed_variation, speed_limit, status):
 
@@ -60,7 +62,7 @@ class SP():
         elif status == 'Decelerating' or status == 'Backward':                                 #減速與後退取最大值
             speed = max(speed_limit, speed + speed_variation)
 
-        rospy.logdebug(f'speed = {speed}')
+        # rospy.logdebug(f'speed = {speed}')
         
         return speed
     
@@ -90,17 +92,17 @@ def main():
             sp.sp_ball.find()
 
             if walk_status == 'Forward':
-                sp.angle_control(-2, 2, 0, FORWARD_ORIGIN_THETA)
+                sp.angle_control(-1, 1, 0, FORWARD_ORIGIN_THETA)
                 sp.forward.speed = sp.speed_control(sp.forward.speed, FORWARD_SPEED_ADD, FORWARD_MAX_SPEED, walk_status)
                 send.sendContinuousValue(sp.forward.speed,0,0,sp.theta,0)
                 walk_status = sp.status_check()
             elif walk_status == 'Decelerating':
-                sp.angle_control(-2, 2, 0, FORWARD_ORIGIN_THETA)
+                sp.angle_control(-1, 1, 0, FORWARD_ORIGIN_THETA)
                 sp.forward.speed = sp.speed_control(sp.forward.speed, FORWARD_SPEED_SUB, FORWARD_MIN_SPEED, walk_status)  
                 send.sendContinuousValue(sp.forward.speed,0,0,sp.theta,0)  
                 walk_status = sp.status_check()            
             else:
-                sp.angle_control(-2, 2, 0, BACK_ORIGIN_THETA)
+                sp.angle_control(-1, 1, 0, BACK_ORIGIN_THETA)
                 sp.backward.speed = sp.speed_control(sp.backward.speed, BACK_SPEED_ADD, BACK_MAX_SPEED, walk_status)
                 # if time.time() - sp.backward_time > 1.5:
                 #     sp.backward.speed = sp.speed_control(sp.backward.speed, BACK_SPEED_ADD, BACK_MAX_SPEED, walk_status)
@@ -113,9 +115,9 @@ def main():
             if not first_in:
                 send.sendBodyAuto(0, 0, 0, 0, 1, 0)
                 
-            walk_status = 'Forward'
-            sp.init()
-            first_in = True
+                walk_status = 'Forward'
+                sp.init()
+                first_in = True
 
         r.sleep()
 

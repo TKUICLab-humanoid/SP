@@ -5,11 +5,11 @@ import numpy as np
 from Python_API import Sendmessage
 import time
 
-FORWARD_START_SPEED = 8000
+FORWARD_START_SPEED = 6000
 BACK_START_SPEED = -4000
-FORWARD_MAX_SPEED = 8000
-FORWARD_MIN_SPEED = 4000
-BACK_MAX_SPEED = -7000
+FORWARD_MAX_SPEED = 6000
+FORWARD_MIN_SPEED = 6000
+BACK_MAX_SPEED = -4000
 
 FORWARD_SPEED_ADD = 100
 FORWARD_SPEED_SUB = -100
@@ -18,7 +18,7 @@ BACK_SPEED_ADD = -50
 FORWARD_ORIGIN_THETA = 0
 BACK_ORIGIN_THETA = 0
 
-class parameter:
+class parameter:      
     def __init__(self, speed, theta):
         self.speed = speed
         self.theta = theta
@@ -34,9 +34,9 @@ class SP():
         self.init()
 
     def status_check(self):
-        if 9500 >= self.sp_ball.size >= 7000:     #到球前減速
+        if 11000 >= self.sp_ball.size >= 9000:     #到球前減速
             return 'Decelerating'
-        elif self.sp_ball.size > 9500:   #準備後退
+        elif self.sp_ball.size > 11000:   #準備後退
             self.backward_time = time.time()
             return 'Backward'
 

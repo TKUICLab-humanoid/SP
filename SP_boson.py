@@ -7,18 +7,18 @@ import sys
 from Python_API import Sendmessage
 import time
 
-FORWARD_START_SPEED = 7000
-BACK_START_SPEED = -3500
-FORWARD_MAX_SPEED = 7000
-FORWARD_MIN_SPEED =4000
-BACK_MAX_SPEED = -7000
+FORWARD_START_SPEED = 5000
+BACK_START_SPEED = -4000
+FORWARD_MAX_SPEED = 5000
+FORWARD_MIN_SPEED = 4000
+BACK_MAX_SPEED = -5000
 
 FORWARD_SPEED_ADD = 100
 FORWARD_SPEED_SUB = -300
 BACK_SPEED_ADD = -100
 
-FORWARD_ORIGIN_THETA = 0
-BACK_ORIGIN_THETA = 0
+FORWARD_ORIGIN_THETA = -1
+BACK_ORIGIN_THETA = -1
 
 HEAD_Y_HIGH = 1800
 HEAD_Y_LOW = 1400
@@ -39,9 +39,9 @@ class SP():
 
     def status_check(self):
         print("size = ", self.sp_ball.size)
-        if 5000 >= self.sp_ball.size >3500:     #到球前減速
+        if 5300 >= self.sp_ball.size >= 3500:     #到球前減速
             return 'Decelerating'
-        elif self.sp_ball.size > 5000:   #準備後退
+        elif self.sp_ball.size > 5300:   #準備後退
             return 'Backward'
 
         return 'Forward'
@@ -113,11 +113,9 @@ def main():
         if send.is_start:
             if first_in:
                 sp.init()
-                send.sendSensorReset(1, 1, 1)
-                time.sleep(0.05)
                 send.sendBodyAuto(0, 0, 0, 0, 1, 0)
                 first_in = False
-                
+                send.sendSensorReset(1, 1, 1)
             sp.head_motor_update()
 
             if walk_status == 'Forward':
@@ -136,7 +134,7 @@ def main():
 
             else:
                 print("size = ", sp.sp_ball.size)
-                sp.angle_control(-3, 2, 0, BACK_ORIGIN_THETA)
+                sp.angle_control(-2, 2, 0, BACK_ORIGIN_THETA)
                 sp.backward.speed = sp.speed_control(sp.backward.speed, BACK_SPEED_ADD, BACK_MAX_SPEED, walk_status)
                 send.sendContinuousValue(sp.backward.speed, 0, 0, sp.theta, 0)
                 time.sleep(0.01)

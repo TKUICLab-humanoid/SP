@@ -7,18 +7,18 @@ import sys
 from Python_API import Sendmessage
 import time
 
-FORWARD_START_SPEED = 6000
+FORWARD_START_SPEED = 7000
 BACK_START_SPEED = -3500
-FORWARD_MAX_SPEED = 6000
+FORWARD_MAX_SPEED = 7000
 FORWARD_MIN_SPEED = 4000
-BACK_MAX_SPEED = -6000
+BACK_MAX_SPEED = -7000
 
 FORWARD_SPEED_ADD = 100
 FORWARD_SPEED_SUB = -300
 BACK_SPEED_ADD = -100
 
-FORWARD_ORIGIN_THETA = 1
-BACK_ORIGIN_THETA = 0
+FORWARD_ORIGIN_THETA = 0
+BACK_ORIGIN_THETA = 1
 
 HEAD_Y_HIGH = 1800
 HEAD_Y_LOW = 1400
@@ -119,14 +119,14 @@ def main():
             sp.head_motor_update()
 
             if walk_status == 'Forward':
-                sp.angle_control(-2, 2, 0, FORWARD_ORIGIN_THETA)
+                sp.angle_control(-2, 1, 0, FORWARD_ORIGIN_THETA)
                 sp.forward.speed = sp.speed_control(sp.forward.speed, FORWARD_SPEED_ADD, FORWARD_MAX_SPEED, walk_status)
                 send.sendContinuousValue(sp.forward.speed, 0, 0, sp.theta, 0)
                 time.sleep(0.01)
                 walk_status = sp.status_check()
 
             elif walk_status == 'Decelerating':
-                sp.angle_control(-2, 2, 0, FORWARD_ORIGIN_THETA)
+                sp.angle_control(-2, 1, 0, FORWARD_ORIGIN_THETA)
                 sp.forward.speed = sp.speed_control(sp.forward.speed, FORWARD_SPEED_SUB, FORWARD_MIN_SPEED, walk_status)
                 send.sendContinuousValue(sp.forward.speed, 0, 0, sp.theta, 0)
                 time.sleep(0.01)
@@ -134,7 +134,7 @@ def main():
 
             else:
                 print("size = ", sp.sp_ball.size)
-                sp.angle_control(-2, 2, 0, BACK_ORIGIN_THETA)
+                sp.angle_control(-2, 1, 0, BACK_ORIGIN_THETA)
                 sp.backward.speed = sp.speed_control(sp.backward.speed, BACK_SPEED_ADD, BACK_MAX_SPEED, walk_status)
                 send.sendContinuousValue(sp.backward.speed, 0, 0, sp.theta, 0)
                 time.sleep(0.01)

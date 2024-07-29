@@ -32,6 +32,14 @@ class Sendmessage:
         self.imu_value_Roll = 0
         self.imu_value_Yaw = 0
         self.imu_value_Pitch = 0
+        self.accel_x = 0
+        self.accel_y = 0
+        self.accel_z = 0
+        self.now_step = 0
+        self.com_x = 0
+        self.real_com_x = 0
+        self.com_vx = 0
+        self.real_com_vx = 0
         self.DIOValue = 0x00
         self.is_start = False
         self.time = 0
@@ -285,6 +293,14 @@ class Sendmessage:
         self.imu_value_Roll  = msg.IMUData[0]
         self.imu_value_Pitch = msg.IMUData[1]
         self.imu_value_Yaw   = msg.IMUData[2]
+        self.accel_x = msg.AccelData[1]
+        self.accel_y = msg.AccelData[0]
+        self.accel_z = msg.AccelData[2]
+        self.now_step = msg.NowStep
+        self.com_x = msg.ComX
+        self.real_com_x = msg.RealComX
+        self.com_vx = msg.ComVelocityX
+        self.real_com_vx = msg.RealComVelocityX
 
     def DIOackFunction(self,msg):
     #取得當前DIO值

@@ -6,12 +6,13 @@ import sys
 # sys.path.append('/home/iclab/Desktop/kid_hurocup/src/strategy')
 from Python_API import Sendmessage
 import time
+import math
 
 FORWARD_START_SPEED = 7000
-BACK_START_SPEED = -3500
-FORWARD_MAX_SPEED = 6500
+BACK_START_SPEED = -4000
+FORWARD_MAX_SPEED = 7000
 FORWARD_MIN_SPEED = 4000
-BACK_MAX_SPEED = -7500
+BACK_MAX_SPEED = -7000
 
 FORWARD_SPEED_ADD = 100
 FORWARD_SPEED_SUB = -300
@@ -19,6 +20,11 @@ BACK_SPEED_ADD = -100
 
 FORWARD_ORIGIN_THETA = 1
 BACK_ORIGIN_THETA = 0
+
+PITCH = 12.2
+SLOW_LINE = 2.9
+BACK_LINE = 3.2
+CORRECT_GAIT = 0.1
 
 HEAD_Y_HIGH = 1800
 HEAD_Y_LOW = 1400
@@ -38,12 +44,30 @@ class SP():
         self.init()
 
     def status_check(self):
-        print("size = ", self.sp_ball.size)
-        if 5300 >= self.sp_ball.size >= 3500:     #到球前減速
-            return 'Decelerating'
-        elif self.sp_ball.size > 5300:   #準備後退
+        rospy.loginfo(f'size = {self.sp_ball.size}')
+        if self.sp_ball.size > 6000:   #準備後退
             return 'Backward'
-
+        
+        elif 6000 >= self.sp_ball.size >= 3000:     #到球前減速  
+            if self.distance_x >= BACK_LINE:
+                if self.com_x < BACK_LINE:
+                    self.distance_x = self.com_x
+                    return 'Decelerating'
+                else:
+                    return 'Backward'   
+            return 'Decelerating'
+        
+        elif SLOW_LINE < self.distance_x < BACK_LINE:
+            if self.com_x < SLOW_LINE:
+                self.distance_x = self.com_x
+            else:
+                return 'Decelerating'
+        elif self.distance_x >= BACK_LINE:
+            if self.com_x < BACK_LINE:
+                self.distance_x = self.com_x
+                return 'Decelerating'
+            else:
+                return 'Backward'     
         return 'Forward'
     
     def head_control(self):
@@ -51,29 +75,28 @@ class SP():
         if self.sp_ball.center.y < 110:                       #後退抬頭
             self.head_y += 20
             self.head_y = min(HEAD_Y_HIGH, self.head_y)
-            print("aa")
 
         if self.sp_ball.center.y > 130:                       #前進低頭
             self.head_y -= 20
             self.head_y = max(HEAD_Y_LOW, self.head_y)
-            print("bb")
-        print("head_y", self.head_y, "center", self.sp_ball.center.y)
+        # print("head_y", self.head_y, "center", self.sp_ball.center.y)
         self.tku_ros_api.sendHeadMotor(2, self.head_y, 100)
         time.sleep(0.01)
 
     def angle_control(self, right_theta, left_theta, straight_theta, original_theta):
         yaw = self.tku_ros_api.imu_value_Yaw
+        
         if yaw > 3:
             self.theta = right_theta    #右轉
-            rospy.logdebug(f'Turn Right')
+            # rospy.logdebug(f'Turn Right')
         elif yaw < -3:
             self.theta = left_theta     #左轉
-            rospy.logdebug(f'Turn Left')
+            # rospy.logdebug(f'Turn Left')
         else:
             self.theta = straight_theta     #直走
-            rospy.logdebug(f'Go Straight')
+            # rospy.logdebug(f'Go Straight')
         self.theta += original_theta
-        rospy.logdebug(f'theta = {self.theta}')
+        # rospy.logdebug(f'theta = {self.theta}')
 
     def speed_control(self, speed, speed_variation, speed_limit, status):
 
@@ -89,10 +112,15 @@ class SP():
     def head_motor_update(self):
         if self.sp_ball.find():
             self.head_control()
-            rospy.logdebug(f'head_y = {self.head_y}')
+            # rospy.logdebug(f'head_y = {self.head_y}')
     
     def init(self):
         self.head_y = 1800
+        self.velocity = 0
+        self.distance_x = 0
+        self.com_vx = 0
+        self.com_x = 0
+        self.now_step = 0
         self.sp_ball.size = 0
         self.forward.speed = FORWARD_START_SPEED
         self.backward.speed = BACK_START_SPEED
@@ -100,23 +128,74 @@ class SP():
         self.tku_ros_api.sendHeadMotor(2, 1800, 50)
         time.sleep(0.01)
 
+    def acceleration(self):
+        yaw = self.tku_ros_api.imu_value_Yaw
+        pitch = self.tku_ros_api.imu_value_Pitch + PITCH
+        roll = self.tku_ros_api.imu_value_Roll
+        self.com_vx = self.tku_ros_api.com_vx
+        self.com_x = self.tku_ros_api.com_x
+        self.now_step = self.now_step
+
+        self.x = math.cos(math.radians(yaw)) * math.cos(math.radians(pitch)) * self.tku_ros_api.accel_x + \
+                (math.cos(math.radians(yaw)) * math.sin(math.radians(pitch)) * math.sin(math.radians(roll)) - math.sin(math.radians(yaw)) * math.cos(math.radians(roll))) * self.tku_ros_api.accel_y + \
+                (math.cos(math.radians(yaw)) * math.sin(math.radians(pitch)) * math.cos(math.radians(roll)) + math.sin(math.radians(yaw)) * math.sin(math.radians(roll))) * self.tku_ros_api.accel_z
+        
+        self.y = math.sin(math.radians(yaw)) * math.cos(math.radians(pitch)) * self.tku_ros_api.accel_x + \
+                (math.sin(math.radians(yaw)) * math.sin(math.radians(pitch)) * math.sin(math.radians(roll)) + math.cos(math.radians(yaw)) * math.cos(math.radians(roll))) * self.tku_ros_api.accel_y + \
+                (math.sin(math.radians(yaw)) * math.sin(math.radians(pitch)) * math.cos(math.radians(roll)) - math.cos(math.radians(yaw)) * math.sin(math.radians(roll))) * self.tku_ros_api.accel_z
+        
+        self.z = -math.sin(math.radians(pitch)) * self.tku_ros_api.accel_x + \
+                math.cos(math.radians(pitch)) * math.sin(math.radians(roll)) * self.tku_ros_api.accel_y + \
+                math.cos(math.radians(pitch)) * math.cos(math.radians(roll)) * self.tku_ros_api.accel_z
+        self.com_x = self.com_x + CORRECT_GAIT * (self.now_step - 2) 
+        # rospy.loginfo(f'x = {self.x}, y = {self.y}, z = {self.z}')
+        
+    def distance(self, times):
+        self.acceleration()
+        self.velocity = self.x * times * 9.8
+        self.distance_x += self.velocity * times
+        if self.velocity < 0.1 or self.velocity > 0.25:
+            self.velocity = self.com_vx
+
+        if self.distance_x < self.com_x - 0.3:
+            self.distance_x = self.com_x
+
+        rospy.loginfo(f'velocity = {self.velocity}, distance_x = {self.distance_x}')
+        rospy.loginfo(f'module_velocity = {self.com_vx}, module_distance_x = {self.com_x}')
+
+
+
+
+
 
 def main():
-    aaaa = rospy.init_node('talker', anonymous=True, log_level=rospy.DEBUG)
+    aaaa = rospy.init_node('talker', anonymous=True, log_level=rospy.INFO)
     send = Sendmessage()
     r = rospy.Rate(30)
     sp = SP(send)
     first_in = True
+    back_flag = True
     walk_status = 'Forward'
+    timer = 0
+    aa = 1
+    total_pitch = 0
+    average_pitch = 0
     while not rospy.is_shutdown():                                  
         
         if send.is_start:
             if first_in:
                 sp.init()
+                send.sendSensorReset(1, 1, 1)
+                time.sleep(0.01)
                 send.sendBodyAuto(0, 0, 0, 0, 1, 0)
                 first_in = False
-                send.sendSensorReset(1, 1, 1)
             sp.head_motor_update()
+
+            if rospy.get_time() - timer > 0.1:
+                sp.distance(0.1)
+                timer = rospy.get_time()
+                rospy.loginfo(f'walk_status = {walk_status}')
+
 
             if walk_status == 'Forward':
                 sp.angle_control(-2, 2, 0, FORWARD_ORIGIN_THETA)
@@ -133,21 +212,46 @@ def main():
                 walk_status = sp.status_check()
 
             else:
-                print("size = ", sp.sp_ball.size)
-                sp.angle_control(-2, 2, 0, BACK_ORIGIN_THETA)
-                sp.backward.speed = sp.speed_control(sp.backward.speed, BACK_SPEED_ADD, BACK_MAX_SPEED, walk_status)
-                send.sendContinuousValue(sp.backward.speed, 0, 0, sp.theta, 0)
-                time.sleep(0.01)
+                if back_flag == False:
+                    sp.angle_control(-2, 2, 0, BACK_ORIGIN_THETA)
+                    sp.backward.speed = sp.speed_control(sp.backward.speed, BACK_SPEED_ADD, BACK_MAX_SPEED, walk_status)
+                    send.sendContinuousValue(sp.backward.speed, 0, 0, sp.theta, 0)
+                    time.sleep(0.01)
+                else:
+                    sp.angle_control(0, 0, 0, BACK_ORIGIN_THETA)
+                    sp.backward.speed = sp.speed_control(sp.backward.speed, BACK_SPEED_ADD, BACK_MAX_SPEED, walk_status)
+                    send.sendContinuousValue(sp.backward.speed, 0, 0, sp.theta, 0)
+                    time.sleep(0.5)
+                    back_flag = False
 
-            rospy.logdebug(f'walk_status = {walk_status}')
+            # rospy.logdebug(f'walk_status = {walk_status}')
+        elif send.DIOValue == 0x1:
+            rospy.loginfo(f'pitch = {sp.tku_ros_api.imu_value_Pitch}')
+            sp.acceleration()
+            rospy.loginfo(f'x = {sp.x}, y = {sp.y}, z = {sp.z}')
+
+        elif send.DIOValue == 0x11:
+            if rospy.get_time() - timer > 0.1:
+                pitch = sp.tku_ros_api.imu_value_Pitch
+                total_pitch += pitch
+                average_pitch = total_pitch / aa
+                rospy.loginfo(f'average_pitch = {average_pitch}')
+                aa += 1
+                timer = rospy.get_time()
+                sp.acceleration()
+                rospy.loginfo(f'x = {sp.x}, y = {sp.y}, z = {sp.z}')
         else:
             if not first_in:
                 send.sendBodyAuto(0, 0, 0, 0, 1, 0)
             walk_status = 'Forward'
             sp.init()
+
             first_in = True
+            back_flag = True
 
         r.sleep()
+
+    
 
 class Coordinate:
     def __init__(self, x, y):
@@ -183,14 +287,14 @@ class SprintBall:
 
         find_left = self.left_side.update()
         find_right = self.right_side.update()
-        print("left :", find_left)
-        print("right :", find_right)
+        # print("left :", find_left)
+        # print("right :", find_right)
         if find_left and find_right:
             # print("left_side_center = ", self.left_side.center.y)
             # print("right_side_center = ", self.right_side.center.y)
 
             center_diff = abs(self.left_side.center - self.right_side.center)
-            print("center_diff_y = ", center_diff.y)
+            # print("center_diff_y = ", center_diff.y)
             if center_diff.y < 5 and (self.left_side.edge_min < self.right_side.edge_min) \
                 and (self.left_side.edge_max < self.right_side.edge_max):   
                 self.tku_ros_api.drawImageFunction(1, 1, *self.left_side.boundary_box, 0, 0, 255)

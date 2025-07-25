@@ -20,8 +20,8 @@ find_package(catkin REQUIRED COMPONENTS
 	tku_libs
 )
 
-find_package(OpenCV)
-find_package(OpenCV 3.1 REQUIRED)
+#find_package(OpenCV)
+#find_package(OpenCV 3.1 REQUIRED)
 set(TKU_LIBRARIES ${CATKIN_DEVEL_PREFIX}/lib/libtku_libs.so)
 set(STRATEGYBASE_LIBRARIES ${CATKIN_DEVEL_PREFIX}/lib/libstrategybase.so)
 # find_package(Boost REQUIRED COMPONENTS system)

@@ -7,17 +7,17 @@ import sys
 from Python_API import Sendmessage
 import time
 
-FORWARD_START_SPEED = 4000
+FORWARD_START_SPEED = 8500
 BACK_START_SPEED = -4000
-FORWARD_MAX_SPEED = 8000
-FORWARD_MIN_SPEED = 4000
-BACK_MAX_SPEED = -8000
+FORWARD_MAX_SPEED = 8500
+FORWARD_MIN_SPEED = 4000    
+BACK_MAX_SPEED = -8500
 
 FORWARD_SPEED_ADD = 100
 FORWARD_SPEED_SUB = -300
 BACK_SPEED_ADD = -100
 
-FORWARD_ORIGIN_THETA = 1
+FORWARD_ORIGIN_THETA = -1
 BACK_ORIGIN_THETA = 0
 
 HEAD_Y_HIGH = 1800
@@ -39,9 +39,9 @@ class SP():
 
     def status_check(self):
         print("size = ", self.sp_ball.size)
-        if 6800 >= self.sp_ball.size >= 3200:     #到球前減速
+        if 5800 >= self.sp_ball.size >= 3200:     #到球前減速
             return 'Decelerating'
-        elif self.sp_ball.size > 6800:   #準備後退
+        elif self.sp_ball.size > 5800:   #準備後退
             return 'Backward'
 
         return 'Forward'
